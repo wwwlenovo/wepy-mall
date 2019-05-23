@@ -1,0 +1,41 @@
+<template>
+  <view class="shop_cart">
+    <shopCart></shopCart>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+export default class shopCart extends wepy.page {
+  config = {
+    navigationBarTitleText: '购物车',
+  }
+  components = {
+    
+  }
+  data = {
+
+  }
+
+  onLoad() {
+  }
+  onShow() {
+    this.$invoke('shopCart', 'getCartListMethod');
+  }
+  computed = {
+
+  }
+  methods = {
+
+  }
+  events = {
+
+  }
+}
+
+</script>
+<style lang="less">
+.shop_cart {
+  background: #f7f7f7;
+}
+
+</style>
