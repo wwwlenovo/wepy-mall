@@ -17,9 +17,11 @@
   "author": "chenguo2345@live.com",
   "license": "MIT",
   "dependencies": {
+    "vant-weapp": "^0.5.13",
     "wepy": "^1.6.0",
     "wepy-async-function": "^1.4.4",
-    "wepy-com-toast": "^1.0.2"
+    "wepy-com-toast": "^1.0.2",
+    "wepy-compiler-typescript": "^1.5.9"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.1",
