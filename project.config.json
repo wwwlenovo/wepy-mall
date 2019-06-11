@@ -1,14 +1,21 @@
 {
-  "description": "Hengjie-mall",
-  "setting": {
-    "urlCheck": true,
-    "es6": false,
-    "postcss": false,
-    "minified": false
-  },
-  "compileType": "miniprogram",
-  "appid": "wx1758aaedecbb1d0f",
-  "projectname": "wepy-Hengjie-mall",
-  "miniprogramRoot": "./dist",
-  "cloudfunctionRoot" :"./cloudfunctions"
+	"description": "Hengjie-mall",
+	"setting": {
+		"urlCheck": false,
+		"es6": false,
+		"postcss": false,
+		"minified": false,
+		"newFeature": true,
+		"nodeModules": true,
+		"autoAudits": false,
+		"checkInvalidKey": true
+	},
+	"compileType": "miniprogram",
+	"appid": "wx1758aaedecbb1d0f",
+	"projectname": "wepy-Hengjie-mall",
+	"miniprogramRoot": "dist/",
+	"cloudfunctionRoot": "cloudfunctions/",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
+	"condition": {}
 }
