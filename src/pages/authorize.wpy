@@ -33,18 +33,6 @@ export default class Authorize extends wepy.page {
         if (res.code) {
           let systemInfo = wepy.getSystemInfoSync();
           wepy.setStorageSync(SYSTEM_INFO, systemInfo);
-          let rlt = await api.wxJsCode2Session({
-            query: {
-              jsCode: res.code,
-              nickName: data.userInfo.nickName
-            }
-          })
-          if (rlt.data.result) {
-            let data = rlt.data;
-            if (data.data.openid) {
-              wepy.setStorageSync(USER_SPECICAL_INFO, data.data);
-            }
-          }
         }
       }
       wepy.switchTab({
@@ -59,32 +47,9 @@ export default class Authorize extends wepy.page {
         wepy.setStorageSync(USER_INFO, e.detail.userInfo);
         let systemInfo = wepy.getSystemInfoSync();
         wepy.setStorageSync(SYSTEM_INFO, systemInfo);
-        let rlt = await api.wxJsCode2Session({
-          query: {
-            jsCode: res.code,
-            nickName: e.detail.userInfo.nickName
-          }
-        })
-        if (rlt.data.result) {
-          let data = rlt.data;
-          if (data.data.openid) {
-            wepy.setStorageSync(USER_SPECICAL_INFO, data.data);
-            wepy.switchTab({
+        wepy.switchTab({
               url: '/pages/home'
-            })
-          }
-        } else {
-          let res = await wepy.showModal({
-            title: 'appid有误',
-            content: '授权失败'
-          })
-          if (res.confirm) {
-            wepy.switchTab({
-              url: '/pages/home'
-            })
-          }
-        }
-
+            }) 
       }
     }
   }

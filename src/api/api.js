@@ -14,8 +14,8 @@ const apiMall = 'https://sujiefs.com/'
 const getDiscoverList = (params) => wxRequest(params, apiMall + '/goods/list?cateidOne=1&cateidTwo=0&price=0&sales=2');
 
 //微信的jscode换取sessionKey
-const wxJsCode2Session = (params) => wxRequest(params, apiMall + "/api/wechat/jscode2session");
-const user2session = (params) => wxRequest(params, apiMall + "/api/wechat/user2session?jsoncallback=?");
+// const wxJsCode2Session = (params) => wxRequest(params, apiMall + "/api/wechat/jscode2session");
+// const user2session = (params) => wxRequest(params, apiMall + "/api/wechat/user2session?jsoncallback=?");
 
 //商品接口---begin
 //首页发现商品接口
@@ -142,7 +142,7 @@ const childGoodsCatetoryList = (params) => wxRequest(params, apiMall + '/api/mal
 //商品分类--end
 
 //查询广告列表
-const getAdList = (params) => wxRequest(params, apiMall + '/api/adverts/list');
+//const getAdList = (params) => wxRequest(params, apiMall + '/api/adverts/list');
 
 export default {
   hostGoodsList,
@@ -150,8 +150,8 @@ export default {
   getHomeDisvocerList,
   getGoodsList,
   goodsDetail,
-  wxJsCode2Session,
-  user2session,
+  //wxJsCode2Session,
+  //user2session,
   userSginInfo,
   doSign,
   addCart,
@@ -193,6 +193,6 @@ export default {
   goodsIsFavorite,
   getMyOrderSize,
   getPayOrderDetail,
-  getAdList,
+  //getAdList,
   getSignDate
 }

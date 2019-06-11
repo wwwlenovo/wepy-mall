@@ -7,18 +7,6 @@
         </swiper-item>
       </block>
     </swiper>
-    <view class="pos">
-      <view class="search_read_only">
-        <navigator class="search_content" open-type="navigate" url="/pages/search">
-          <i class="iconfont icon-search"></i>
-          <view class="search_input">搜索商品</view>
-        </navigator>
-        <navigator class="message" url="/pages/messages">
-          <i class="iconfont icon-message cfff"></i>
-          <view class="doc cfff">消息</view>
-        </navigator>
-      </view>
-    </view>
     <view class="nav_list">
       <navigator open-type="navigate" url="/pages/sign_in">
         <image src="../images/icon_nav_01_new.png" class="nav_icon"></image>
@@ -43,8 +31,6 @@
     <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
     <!--暂无数据显示-->
     <placeholder :show.sync="is_empty" message="暂无发现数据"></placeholder>
-    <!--弹屏  types:0 图片  1：领红包   show 是否显示  @close 关闭回调  @callback 点击图片回调 或确定回调-->
-    <bombscreen :types.sync="tps" :show.sync="is_show_alert" @close.user="closeAlert" @callback.user="alertCallback"></bombscreen>
   </view>
 </template>
 <script>
@@ -57,7 +43,7 @@ import BottomLoadMore from "../components/common/bottomLoadMore"
 import Placeholder from "../components/common/placeholder"
 export default class Home extends wepy.page {
   config = {
-    navigationBarTitleText: '演示商城',
+    navigationBarTitleText: '恒洁卫浴',
   }
   components = {
     discover: Discover,
@@ -112,13 +98,13 @@ export default class Home extends wepy.page {
     that.showLoading = false;
   }
   async getAdList() {
-    const json = await api.getAdList({
-      query: {}
-    });
-    if (json.data.code == 0) {
-      this.adList = json.data.list;
-      this.$apply();
-    } else {}
+    let that = this;
+    wx.cloud.callFunction({
+      name: 'getAdList',
+    }).then(res=>{
+      that.adList = res.result.data;
+      that.$apply();
+    })
   }
   onLoad() {
     let that = this;
@@ -191,30 +177,6 @@ export default class Home extends wepy.page {
 .slide-image {
   width: 100%;
   height: 100%;
-}
-
-.pos {
-  position: absolute;
-  top: 0rpx;
-  left: 0;
-  right: 0;
-  .search_content {
-    background: rgba(0, 0, 0, 0.1);
-    border: 1px solid #efefee;
-    .icon-search,
-    .search_input {
-      color: #efefee;
-    }
-  }
-  .message {
-    display: block;
-    text-align: center;
-    margin-left: 20rpx;
-  }
-  .doc {
-    font-size: 16rpx;
-    display: block;
-  }
 }
 
 
