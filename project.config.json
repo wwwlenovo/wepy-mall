@@ -1,5 +1,5 @@
 {
-  "description": "Hengjie Mall",
+  "description": "Hengjie-mall",
   "setting": {
     "urlCheck": true,
     "es6": false,
@@ -7,7 +7,8 @@
     "minified": false
   },
   "compileType": "miniprogram",
-  "appid": "touristappid",
-  "projectname": "yes",
-  "miniprogramRoot": "./dist"
+  "appid": "wx1758aaedecbb1d0f",
+  "projectname": "wepy-Hengjie-mall",
+  "miniprogramRoot": "./dist",
+  "cloudfunctionRoot" :"./cloudfunctions"
 }

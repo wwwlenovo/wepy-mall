@@ -9,46 +9,82 @@
   </view>
 </template>
 <script>
-import wepy from 'wepy'
+import wepy from 'wepy';
+import api from '@/api/api';
 import {
   SYSTEM_INFO,
-  //    USER_SPECICAL_INFO,
+  USER_SPECICAL_INFO,
   USER_INFO
-} from '@/utils/constant'
+} from '@/utils/constant';
 export default class Authorize extends wepy.page {
   config = {
-    navigationBarTitleText: '授权登录'
+    navigationBarTitleText: '授权登录',
   }
-  async onLoad() {
-    // let res = await wepy.getSetting()
-    // if ((res.authSetting)['scope.userInfo']) {
-    //   let userInfo = wepy.getStorageSync(USER_INFO)
-    //   if (!userInfo.nickName) {
-    //     let data = await wepy.getUserInfo()
-    //     if (data) {
-    //       wepy.setStorageSync(USER_INFO, data.userInfo)
-    //     }
-    //     let res = await wepy.login()
-    //     if (res.code) {
-    //       let systemInfo = wepy.getSystemInfoSync()
-    //       wepy.setStorageSync(SYSTEM_INFO, systemInfo)
-    //     }
-    //   }
-    //   wepy.switchTab({
-    //     url: '/pages/home'
-    //   })
-    // }
+  async onLoad() { 
+    let res = await wepy.getSetting()
+    if ((res.authSetting)['scope.userInfo']) {
+      let userInfo = wepy.getStorageSync(USER_INFO)
+      if (!userInfo.nickName) {
+        let data  = await wepy.getUserInfo()
+        if (data) {
+          wepy.setStorageSync(USER_INFO, data.userInfo)
+        }
+        let res = await wepy.login()
+        if (res.code) {
+          let systemInfo = wepy.getSystemInfoSync();
+          wepy.setStorageSync(SYSTEM_INFO, systemInfo);
+          let rlt = await api.wxJsCode2Session({
+            query: {
+              jsCode: res.code,
+              nickName: data.userInfo.nickName
+            }
+          })
+          if (rlt.data.result) {
+            let data = rlt.data;
+            if (data.data.openid) {
+              wepy.setStorageSync(USER_SPECICAL_INFO, data.data);
+            }
+          }
+        }
+      }
+      wepy.switchTab({
+        url: '/pages/home'
+      })
+    }
   }
   async onGotUserInfo(e) {
-    if (e.detail.errMsg === 'getUserInfo:ok') {
-      let res = await wepy.login()
+    if (e.detail.errMsg == 'getUserInfo:ok') {
+      let res = await wepy.login();
       if (res.code) {
-        wepy.setStorageSync(USER_INFO, e.detail.userInfo)
-        let systemInfo = wepy.getSystemInfoSync()
-        wepy.setStorageSync(SYSTEM_INFO, systemInfo)
-        wepy.switchTab({
-          url: '/pages/home'
+        wepy.setStorageSync(USER_INFO, e.detail.userInfo);
+        let systemInfo = wepy.getSystemInfoSync();
+        wepy.setStorageSync(SYSTEM_INFO, systemInfo);
+        let rlt = await api.wxJsCode2Session({
+          query: {
+            jsCode: res.code,
+            nickName: e.detail.userInfo.nickName
+          }
         })
+        if (rlt.data.result) {
+          let data = rlt.data;
+          if (data.data.openid) {
+            wepy.setStorageSync(USER_SPECICAL_INFO, data.data);
+            wepy.switchTab({
+              url: '/pages/home'
+            })
+          }
+        } else {
+          let res = await wepy.showModal({
+            title: 'appid有误',
+            content: '授权失败'
+          })
+          if (res.confirm) {
+            wepy.switchTab({
+              url: '/pages/home'
+            })
+          }
+        }
+
       }
     }
   }

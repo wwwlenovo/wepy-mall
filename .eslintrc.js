@@ -1,6 +1,5 @@
 module.exports = {
   root: true,
-  globals: { wx: true },
   parser: 'babel-eslint',
   parserOptions: {
     sourceType: 'module'
@@ -28,3 +27,4 @@ module.exports = {
     'space-before-function-paren': 0
   }
 }
+
