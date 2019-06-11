@@ -4,11 +4,8 @@
             <view class="discover_title_doc">发现好商品</view>
         </view>-->
         <view class="discover_list">
-            <navigator class="item" open-type="navigate" wx:for="{{list}}" wx:key="item" url="/pages/home_detail?code={{item.code}}" >
+            <navigator class="item" open-type="navigate" wx:for="{{list}}" wx:key="item" url="/pages/home_detail?code=20" >
                 <image class="discover_img" src="{{item.logo}}"></image>
-                <view class="info" wx:for="{{item.attrs}}" wx:key="item">
-                    <view>{{item.attrName.attrName}}：</view><view wx:for="{{item.attrValList}}" wx:key="item">{{item.attrVal}} </view>
-                </view>
         </view>
         </navigator>
     </view>
@@ -16,7 +13,6 @@
 </template>
 <script>
 import wepy from 'wepy';
-import api from '@/api/api';
 
 export default class Discover extends wepy.component {
 

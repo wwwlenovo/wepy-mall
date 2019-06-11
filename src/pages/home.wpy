@@ -75,27 +75,23 @@ export default class Home extends wepy.page {
   }
   async getDiscoverList(currentPage, size) {
     let that = this;
-    const json = await api.getHomeDisvocerList({
-      query: {
+    wx.cloud.callFunction({
+      name: 'getHomeDiscoverList',
+      data:{
         page: currentPage || 1,
         size: size || 10
       }
-    });
-    if (json.data.code == 0) {
-      that.discoverList = [...that.discoverList, ...json.data.list];
-
-      if (json.data.page_total) { // 后台的数据不再返回page_total
-      that.page_total = json.data.page_total
-      };
-      if (json.data.page_total == 0) {
+    }).then(result => {
+      let res = result.result;
+      that.discoverList = [...that.discoverList, ...res.data];
+      that.page_total = res.total;
+      if (res.total == 0) {
         //暂无数据
         that.is_empty = true;
       }
       that.$apply();
-    } else {
-      tip.error(json.data.msg);
-    }
-    that.showLoading = false;
+      that.showLoading = false;
+    });
   }
   async getAdList() {
     let that = this;
@@ -129,7 +125,7 @@ export default class Home extends wepy.page {
         console.log(res.target)
       }
       return {
-        title: '素洁服装厂',
+        title: '恒洁卫浴',
         path: '/pages/home',
         success: function(res) {
           // 转发成功
