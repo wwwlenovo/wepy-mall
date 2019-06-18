@@ -2,7 +2,7 @@
 <template>
   <view class="item">
     <view class="img_box">
-      <image class="discover_img" src="{{cate.logo}}"></image>
+      <image class="discover_img" src="{{cate.Category_Logo}}"></image>
     </view>
   </view>
   <view class="shop_list">
@@ -16,7 +16,6 @@
 </template>
 <script>
 import wepy from 'wepy';
-import api from '@/api/api';
 import FilterBar from "../components/filter_bar"
 import ShopGridList from '@/components/shop_grid_list'
 import BottomLoadMore from "../components/common/bottomLoadMore"
@@ -51,28 +50,29 @@ export default class HomeDetail extends wepy.page {
 
   async getGoodList(currentPage, size) {
     let that = this;
-    //const json = await api.getGoodsList({
-    const json = await api.hostGoodsList({
-      query: {
+    wx.cloud.callFunction({
+      name: 'getGoodsList',
+      data:{
         page: currentPage || 1,
         size: size || 10,
         cateCode: this.catCode
       }
-    });
-    if (json.data.code == 0) {
-      that.cate = json.data.category;
-      wx.setNavigationBarTitle({  title: that.cate.name})
-      that.list = [...that.list, ...json.data.list];
-      that.page_total = json.data.page_total;
-      if (json.data.page_total == 0) {
+    }).then(res=>{
+      console.log(res)
+      that.cate = res.result.category;
+      wx.setNavigationBarTitle({title: that.cate.Category_Name});
+      that.list = [...that.list, ...res.result.data];
+      that.page_total = res.result.total;
+      if (that.page_total == 0) {
         //暂无数据
         that.is_empty = true;
       }
-    } else {
-      tip.error(json.data.msg);
-    }
-    that.showLoading = false;
-    that.$apply();
+      that.showLoading = false;
+      that.$apply();
+    })
+    .catch(err => {
+      tip.error(err);
+    });
   }
 
   onLoad(option) {
@@ -147,13 +147,13 @@ page {
 
 .img_box {
   width: 100%;
-  height: 370rpx;
+  height: 300rpx;
   background: #000;
 }
 
 .discover_img {
   width: 100%;
-  height: 370rpx;
+  height: 300rpx;
 }
 
 .info {
