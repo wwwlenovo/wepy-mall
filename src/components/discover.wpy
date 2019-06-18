@@ -4,8 +4,8 @@
             <view class="discover_title_doc">发现好商品</view>
         </view>-->
         <view class="discover_list">
-            <navigator class="item" open-type="navigate" wx:for="{{list}}" wx:key="item" url="{{item.TargetUrl}}">
-                <image class="discover_img" src="{{item.logo}}"></image>
+            <navigator class="item" open-type="navigate" wx:for="{{list}}" wx:key="item" url="{{item.Target_Url}}">
+                <image class="discover_img" src="{{item.Category_Logo}}"></image>
         </view>
         </navigator>
     </view>
