@@ -21,6 +21,11 @@ export default class Authorize extends wepy.page {
     navigationBarTitleText: '授权登录',
   }
   async onLoad() { 
+     wx.cloud.callFunction({
+      name: 'getOpenID'
+    }).then(res => {
+      wepy.setStorageSync(USER_SPECICAL_INFO,{openid:res.result.openid,appid:res.result.appid});
+    })
     let res = await wepy.getSetting()
     if ((res.authSetting)['scope.userInfo']) {
       let userInfo = wepy.getStorageSync(USER_INFO)

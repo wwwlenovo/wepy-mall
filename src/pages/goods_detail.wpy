@@ -50,10 +50,10 @@
           </view>
         </view>
         <scroll-view scroll-y="true" style="height:400rpx">
-          <view class="rule_box" wx:for="{{detail.Goods_Sku_Name_List}}" item="item" wx:key="key" wx:for-index="ex">
+          <view class="rule_box" wx:for="{{detail.Goods_Sku_Name_List}}" item="item" wx:key="key" wx:for-index="nameIndex">
             <view class="title">{{item.Sku_Name}}</view>
             <view class="items">
-              <view class="item {{item.Current?'active':''}}" wx:for="{{item.Sku_Value_List}}" item="item" wx:key="key" @tap.stop="selAttr" data-id="{{item.skuValId}}" data-nameid="{{item.skuNameId}}" data-index="{{ex}}">{{item.Sku_Val}}</view>
+              <view class="item {{item.Current?'active':''}}" wx:for="{{item.Sku_Value_List}}" item="item" wx:key="key" wx:for-index="valIndex" @tap.stop="selAttr" data-index1="{{nameIndex}}" data-index2="{{valIndex}}">{{item.Sku_Val}}</view>
             </view>
           </view>
           <view class="num_box">
@@ -123,7 +123,6 @@ export default class goodsDetail extends wepy.page {
     //接收上一个页面传过来的参数
     that.goodsId = option.id;
     that.getGoodsDetail();
-    that.addUserBrowser();
   }
   onShow() {
     //创建动画
@@ -160,22 +159,13 @@ export default class goodsDetail extends wepy.page {
     .then(res => {
       console.log(res);
       that.detail = res.result.data[0];
+      that.detail['goodsSkuVal'] = that.detail.Goods_Sku_Name_List[0].Sku_Value_List[0].Sku_Val;
       WxParse.wxParse('detailInfo', 'html', that.detail.Detail_Info, this);
       that.$apply();
     })
     .catch(err => {
-      tip.error(err);
-    });
-  }
-  async addUserBrowser() {
-    let that = this;
-    let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
-    let openId = userSpecialInfo.openid;
-    const json = await api.addBrowser({
-      query: {
-        goodsId: that.goodsId,
-        openId: openId
-      }
+      console.log(err);
+      tip.error(err.toSring());
     });
   }
   computed = {}
@@ -185,16 +175,17 @@ export default class goodsDetail extends wepy.page {
     let that = this;
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
-    const json = await api.addCart({
-      query: {
-        openId: openId,
-        goodsId: that.goodsId,
-        goodsSkuId: this.detail.goodsSkuValIds,
-        purchaseType: this.purchasetype,
-        num: this.orderNum
+    wx.cloud.callFunction({
+      name: 'addToCart',
+      data:{
+         openId:openId,
+         goodsId:this.goodsId,
+         skuVal:this.detail.goodsSkuVal,
+         orderNum: this.orderNum
       }
-    });
-    if (json.data.code == 0) {
+    })
+    .then(res=>{
+      console.log(res);
       this.winHeight = "100%";
       this.animation.height(0).step();
       this.setData({
@@ -205,13 +196,11 @@ export default class goodsDetail extends wepy.page {
         this.$apply();
       }, 100)
       tip.success("成功加入购物车");
-    } else {
-      if (json.data.msg) {
-        tip.error(json.data.msg)
-      } else {
-        tip.error('无法加入购物车')
-      }
-    }
+    })
+    .catch(err=>{
+      console.log(err);
+      tip.error('无法加入购物车');
+    });
   }
   //立即购买
   async doTakeOrder() {
@@ -271,7 +260,7 @@ export default class goodsDetail extends wepy.page {
     previewImage(e) {
       let current = e.target.dataset.src;
       let imageArry = [];
-      let obj = this.detail.photoList;
+      let obj = this.detail.Cover_Pics;
       Object.keys(obj).forEach((item) => {
         imageArry.push(obj[item].photo)
       });
@@ -326,34 +315,18 @@ export default class goodsDetail extends wepy.page {
       }
     },
     selAttr(e) {
-      var id = e.currentTarget.dataset.id;
-      var nameid = e.currentTarget.dataset.nameid;
-      var index = e.currentTarget.dataset.index;
-      for (var i = 0; i < this.detail.goodsSkuNameList.length; i++) {
-        var skuValList = this.detail.goodsSkuNameList[i].skuValList;
-        for (var j = 0; j < skuValList.length; j++) {
-          var skuVal = skuValList[j];
-          if (skuVal.skuNameId == nameid) {
-            skuVal.current = false;
-            if (skuVal.skuValId == id) {
-              skuVal.current = true;
-              this.detail.goodsSkuValIds[index] = id;
-              for (var k = 0; k < this.detail.goodsSkuList.length; k++) {
-                var skuValIds = JSON.parse(this.detail.goodsSkuList[k].skuValIds).toArray;
-                console.log("goodskuids..." + this.detail.goodsSkuList[k].skuValIds);
-                console.log("this goodskuids..." + this.detail.goodsSkuValIds);
-                if ("[" + this.detail.goodsSkuValIds.toString() + "]" === this.detail.goodsSkuList[k].skuValIds) {
-                  console.log("goodskuids equals...");
-                  this.detail.stockNum = this.detail.goodsSkuList[k].stockNum;
-                  this.detail.price = this.detail.goodsSkuList[k].price;
-                  this.$apply();
-                  break;
-                }
-              }
-            }
+      let nameIndex = e.currentTarget.dataset.index1;
+      let valIndex = e.currentTarget.dataset.index2;
+      this.detail.Stock_Num = this.detail.Goods_Sku_Name_List[nameIndex].Sku_Value_List[valIndex].Stock_Num;
+      this.detail.Sale_Price = this.detail.Goods_Sku_Name_List[nameIndex].Sku_Value_List[valIndex].Sale_Price;
+      this.detail.Goods_Sku_Name_List[nameIndex].Sku_Value_List[valIndex].Current = true;
+      this.detail.Goods_Sku_Name_List[nameIndex].Sku_Value_List.forEach((elem, index, self) => {
+          if(index !== valIndex) {
+            self[index].Current = false;
           }
-        }
-      }
+      });
+      this.detail.goodsSkuVal = this.detail.Goods_Sku_Name_List[nameIndex].Sku_Value_List[valIndex].Sku_Val;
+      this.$apply();
     },
     onShareAppMessage: function(res) {
       if (res.from === 'button') {
