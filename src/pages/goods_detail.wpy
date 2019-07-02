@@ -207,35 +207,34 @@ export default class goodsDetail extends wepy.page {
     let that = this;
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
-    const json = await api.addCart({
-      query: {
-        openId: openId,
-        goodsId: that.goodsId,
-        goodsSkuId: this.detail.goodsSkuValIds,
-        purchaseType: this.purchasetype,
-        num: this.orderNum
+    wx.cloud.callFunction({
+      name: 'addToCart',
+      data:{
+         openId:openId,
+         goodsId:this.goodsId,
+         skuVal:this.detail.goodsSkuVal,
+         orderNum: this.orderNum
       }
-    });
-    if (json.data.code == 0) {
+    })
+    .then(res=>{
+      console.log(res);
       this.winHeight = "100%";
       this.animation.height(0).step();
       this.setData({
         animationData: this.animation.export()
-      })
+      });
       setTimeout(() => {
         this.hidden = true;
         this.$apply();
-      }, 100)
+      }, 100);
       wepy.navigateTo({
-        url: "/pages/comfire_order?goodsId=" + that.goodsId + "&purchasetype=" + that.purchasetype
-      })
-    } else {
-      if (json.data.msg) {
-        tip.error(json.data.msg)
-      } else {
-        tip.error('无法立刻购买')
-      }
-    }
+        url: "/pages/comfire_order?goodsId=" + that.goodsId
+      });
+    })
+    .catch(err=>{
+      console.log(err);
+      tip.error('无法立刻购买');
+    });
   }
   async showConfirmData() {
     this.animation.height('783rpx').step();
