@@ -16,7 +16,6 @@
 </template>
 <script>
 import wepy from 'wepy';
-import FilterBar from "../components/filter_bar"
 import ShopGridList from '@/components/shop_grid_list'
 import BottomLoadMore from "../components/common/bottomLoadMore"
 import Placeholder from "../components/common/placeholder"
@@ -42,7 +41,6 @@ export default class HomeDetail extends wepy.page {
     preventRepeatReuqest: false
   }
   components = {
-    filterBar: FilterBar,
     shopGridList: ShopGridList,
     bottomLoadMore: BottomLoadMore,
     placeholder: Placeholder

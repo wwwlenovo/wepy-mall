@@ -2,7 +2,7 @@
 <template>
   <scroll-view scroll-y="true" class="swiper-item-box">
     <view class="shop_item">
-      <navigator class="list" wx:for="{{list}}" wx:key="item" url="/pages/goods_detail?id={{item.id}}&purchasetype={{purchasetype}}&special={{special}}">
+      <navigator class="list" wx:for="{{list}}" wx:key="item" url="/pages/goods_detail?id={{item._id}}">
         <view class="image_box">
           <image src="{{item.logo}}"></image>
         </view>

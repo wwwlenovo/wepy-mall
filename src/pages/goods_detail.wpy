@@ -13,54 +13,10 @@
       <view class="details-title">{{detail.name}}</view>
       <view class="details_pinfo">
         <text class="price">￥{{detail.price}}</text>
-        <view class="order_time {{purchasetype==2||special==1?'hidden':''}}">
-          <timer :startTime.sync="startTime" :endTime.sync="endTime"></timer>
-        </view>
 <!--         <view class="share-box">
           <i class="iconfont icon-share"></i>
           <text>分享</text>
         </view> -->
-      </view>
-      <view class="baoyou">满{{detail.freeShipNum}}件包邮</view>
-    </view>
-    <view class="order_num">
-      <view class="doc" wx:if="{{special == 1}}">库存:
-        <text class="num">{{detail.stockNum}}件</text>
-      </view>
-      <view class="doc" wx:else>规定单数:
-        <text class="num">{{detail.minBuyNum}}件成团</text>
-      </view>
-      <view class="doc">订单中:
-        <text class="num">已拼{{detail.saleCount}}件</text>
-      </view>
-    </view>
-    <view class="block">
-      <view class="block_title">拼货流程</view>
-      <view class="block_content">
-        <view class="process">
-          新款展示
-          <i class="iconfont icon-next"></i> 拼单结束
-          <i class="iconfont icon-next"></i> 生产商品
-          <i class="iconfont icon-next"></i> 商品检验
-          <i class="iconfont icon-next"></i> 商品发货
-        </view>
-        <view class="doc">
-          如若出现特殊情况外，发货时间则会延迟5-10天左右。
-        </view>
-      </view>
-      <view class="block_title">商品评价(20)</view>
-      <view class="block_content">
-        <commentList :list.sync="commentList"></commentList>
-        <view class="button-more-cmment" wx:if="{{commentList.length!==0}}" @tap="moreComment">查看更多评论</view>
-      </view>
-    </view>
-    <view class="spacing"></view>
-    <view class="block">
-      <view class="block_title">拼单说明</view>
-      <view class="block_content">
-        <view class="doc">
-          此商品在拼单期间可接收订单，如若超过拼单时间则不能下单；拼单结束后未付款订单系统将会自动取消，所以，亲下单以后请尽快付款。我们会以实际订单为准为您发货，如超过订单时间而又没有拼购到规定数量的，我们将会第一时间为您退款，请您放心购买!
-        </view>
       </view>
     </view>
     <view class="spacing"></view>
@@ -88,23 +44,6 @@
     </view>
     <view class="detail-bottom">
       <view class="bottom-box">
-        <view class="item" @tap="homePage">
-          <i class="iconfont icon-home"></i>
-          <view class="doc">首页</view>
-        </view>
-        <!-- <contact-button class="contact"> -->
-        <contact-button class="contact">
-        </contact-button>
-        <view class="item">
-          <i class="iconfont icon-message"></i>
-          <view class="doc">客服</view>
-        </view>
-        <contact-button class="contact">
-        </contact-button>
-        <view class="item {{isFavorite?'selec_active':''}}" @tap="takeFavorite">
-          <i class="iconfont icon-collection"></i>
-          <view class="doc">收藏</view>
-        </view>
         <view class="sy-bottom {{canOrder?'btn_cart':'cart_color'}}" @tap="takeCart">加入购物车</view>
         <view class="sy-bottom {{canOrder?'btn_order':'order_color'}}" @tap="takeOrder">{{purchaseText}}</view>
       </view>
@@ -153,8 +92,6 @@ import {
 import tip from '@/utils/tip'
 import api from '@/api/api';
 import WxParse from "../plugins/wxParse/wxParse";
-import CommentList from "../components/comment_list"
-import timer from '@/components/common/timer'
 export default class goodsDetail extends wepy.page {
   config = {
     navigationBarTitleText: '商品详情'
@@ -185,35 +122,9 @@ export default class goodsDetail extends wepy.page {
     purchasetype: 1, //1-正常购买;2-补货
     purchaseText: "立即购买",
     special: 0, ////0-正常入库;1-特价专区和换货专区,
-    commentList: [
-
-      {
-        url: "../images/icon_nav_01_new.png",
-        name: "浪子天涯",
-        time: "2017-10-01 10:10",
-        content: "东西收到,很满意!!真的是超级好的卖家,解答疑问不厌其烦,细致认真,关键是东西好,而且货物发得超快,包装仔细,值得信赖!",
-        start: 4.5,
-        children: [{
-          content: "跟你交易次次都这么成功和开心的．．希望我们以后有更多的交易吧．．．哈哈"
-        }]
-      },
-      {
-        url: "../images/icon_nav_02_new.png",
-        name: "勇闯天下",
-        time: "2017-10-01 10:10",
-        content: "太感谢了，衣服很漂亮，朋友很喜欢，最主要的是买家太好了~~~大大的赞一个。。。 衣服，很合身",
-        start: 4,
-        children: []
-      }
-
-
-    ],
-    commentList1: [],
   }
 
   components = {
-    commentList: CommentList,
-    timer:timer
   }
   onLoad(option) {
     let that = this;
@@ -228,20 +139,8 @@ export default class goodsDetail extends wepy.page {
     that.$apply();
     //接收上一个页面传过来的参数
     that.goodsId = option.id;
-    if (option.purchasetype != undefined) {
-      this.purchasetype = option.purchasetype;
-    }
-    if (this.purchasetype == 2) {
-      this.purchaseText = "申请补货";
-    } else {
-      this.purchaseText = "立即购买";
-    }
-    if (option.special != undefined) {
-      this.special = option.special;
-    }
     that.getGoodsDetail();
     that.addUserBrowser();
-    console.log("special===" + this.special);
   }
   onShow() {
     this.goodsIsFavorite();
@@ -268,22 +167,17 @@ export default class goodsDetail extends wepy.page {
       })
     }
   }
-  /*onReachBottom() {
-    let that = this;
-    if (that.good_bigimg.length == 0) {
-      that.good_bigimg = that.detail.good_bigimg;
-      that.$apply();
-    }
-  }*/
   async getGoodsDetail() {
     let that = this;
-    //const json = await api.getGoodsDetail({
-    const json = await api.goodsDetail({
-      query: {
+    wx.cloud.callFunction({
+      name: 'getGoodsDetail',
+      data:{
         id: that.goodsId
       }
-    });
-    let time = {};
+    }).then(res => {
+
+    })
+
     if (json.data.code == 0) {
       let data = json.data.data;
       that.detail = data;
@@ -304,7 +198,6 @@ export default class goodsDetail extends wepy.page {
       }
     }
     that.$apply();
-    this.$invoke('timer', 'initTimer', time);
   }
   async addUserBrowser() {
     let that = this;
@@ -399,91 +292,12 @@ export default class goodsDetail extends wepy.page {
       this.$apply();
     }, 100)
   }
-  //查看商品收藏状态
-  async goodsIsFavorite() {
-    let that = this;
-    let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
-    let openId = userSpecialInfo.openid;
-    const json = await api.goodsIsFavorite({
-      query: {
-        openId: openId,
-        goodsId: that.goodsId
-      }
-    });
-    if (json.data.code == 0) {
-      if (json.data.isFavorite == 1) {
-        this.isFavorite = true;
-        console.log(this.isFavorite);
-      } else {
-        this.isFavorite = false;
-      }
-    } else {
-      console.log('查看商品收藏失败')
-      if (json.data.msg) {
-        tip.error(json.data.msg)
-      } else {
-        tip.error('查看商品收藏失败')
-      }
-    }
-    that.$apply();
-  }
-  //商品收藏
-  async goodsFavorite() {
-    let that = this;
-    let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
-    let openId = userSpecialInfo.openid;
-    const json = await api.goodsFavorite({
-      query: {
-        openId: openId,
-        goodsId: that.goodsId
-      }
-    });
-    if (json.data.code == 0) {
-      console.log("===========商品收藏成功=========")
-      this.isFavorite = true;
-      tip.toast("收藏成功");
-    } else {
-      console.log(json.data)
-      tip.error('收藏失败')
-    }
-    that.$apply();
-  }
-  //商品取消收藏
-  async goodsUnFavorite() {
-    let that = this;
-    let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
-    let openId = userSpecialInfo.openid;
-    const json = await api.goodsUnFavorite({
-      query: {
-        openId: openId,
-        goodsId: that.goodsId
-      }
-    });
-    if (json.data.code == 0) {
-      console.log("===========商品取消收藏成功=========")
-      tip.toast("取消收藏成功");
-      this.isFavorite = false;
-    } else {
-      console.log(json.data)
-      tip.error('取消收藏失败')
-    }
-    that.$apply();
-  }
+
   methods = {
-    // issus : https://mp.weixin.qq.com/debug/wxadoc/dev/api/ui-navigate.html#wxrelaunchobject
+    
     homePage() {
       wepy.switchTab({
         url: '/pages/home'
-      })
-      // wx.switchTab({
-      //   url: '/pages/home'
-      // })
-      // console.log(wepy)
-      // console.log(wx)
-    },
-    moreComment() {
-      wepy.navigateTo({
-        url: "/pages/comment"
       })
     },
     previewImage(e) {
@@ -516,13 +330,6 @@ export default class goodsDetail extends wepy.page {
       this.showConfirmData();
       this.orderType = 1;
       //this.doTakeCart();
-    },
-    takeFavorite() {
-      if (this.isFavorite == true) {
-        this.goodsUnFavorite();
-      } else {
-        this.goodsFavorite();
-      }
     },
     closeModel() {
       this.winHeight = "100%";
