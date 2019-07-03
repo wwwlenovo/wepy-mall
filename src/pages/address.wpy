@@ -33,41 +33,48 @@ export default class Address extends wepy.page {
     type: "" //哪个页面跳转过来的
   }
 
-  async getUserAddress(phone,code) {
+  async getUserAddress() {
     let that = this;
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
-    const json = await api.getUserAddress({
-      query: {
-        openId: openId
-      }
-    });
 
-    if (json.data.code == 0) {
-      this.addressList=json.data.list;
-      this.$invoke("addressList","refreshList", this.addressList);
-    } else {
-      tip.error(json.data.msg)
-    }
-    that.showLoading = false;
+    wx.cloud.callFunction({
+      name: 'getUserAddress',
+      data:{
+        openId:openId
+      }
+    })
+    .then(res => {
+      that.addressList = res.result.data;
+      that.$invoke("addressList","refreshList", this.addressList);
+      that.showLoading = false;
+    })
+    .catch(err => {
+      console.log(err);
+      that.showLoading = false;
+      tip.error("获取地址错误");
+    })
+  
   }
 
   async receiverInf(id) {
     let that = this;
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
-    const json = await api.receiverInfoById({
-      query: {
-        id: id
+    wx.cloud.callFunction({
+      name: 'getAddressInfo',
+      data:{
+        id:id
       }
-    });
-    if (json.data.code == 0) {
-      this.receiverInfo=json.data.receiverInfo;
+    })
+    .then(res => {
+      this.receiverInfo=res.result.data.receiverInfo;
       this.$invoke("addressEdit","refresh", this.receiverInfo);
-      console.log("=================================")
-    } else {
-      tip.error(json.data.msg)
-    }
-    that.showLoading = false;
+      that.showLoading = false;
+    })
+    .catch(err => {
+      tip.error("获取地址错误");
+      that.showLoading = false;
+    })
   }
 
   components = {

@@ -148,35 +148,31 @@ export default class ComfireOrder extends wepy.page {
 
   async getAddressInfo(id) {
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
-    const json = await api.receiverInfoById({
-      query: {
-        id: id
+    wx.cloud.callFunction({
+      name: 'getAddressInfo',
+      data:{
+        id:id
       }
-    });
-    if (json.data.code == 0) {
-      this.is_exit_address = true;
-      this.address=json.data.receiverInfo;
-    } else {
-      tip.error(json.data.msg)
-    }
+    })
+    .then(res => {
+      if(res.result.data.length!==0){
+        this.is_exit_address = true;
+        this.address = res.result.data[0];
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      tip.error("获取地址错误");
+    })
   }
 
   onLoad(option) {
     let that = this;
     this.actualPrice = 0;
     this.totalPrice = 0;
-    this.total_jf_num = 0;
-    this.can_use_score = 0;
-    this.deduScore = 0;
-    this.deduFee = 0;
-    this.jf_num = 0;
-    this.reduce_fee = 0;
     this.operating = false;
     that.goodsId = option.goodsId==undefined?"":option.goodsId;
     this.goodsSkuVal = option.goodsSkuVal==undefined?"":option.goodsSkuVal;
-  
-    /*that.list = bb.result.products;
-    console.log(bb.result.products)*/
     that.getOrderDetailInfo();
     let from = option.from==undefined?"":option.from;
     if (from=="selAdd") {
