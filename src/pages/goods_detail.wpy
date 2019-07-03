@@ -160,6 +160,7 @@ export default class goodsDetail extends wepy.page {
       console.log(res);
       that.detail = res.result.data[0];
       that.detail['goodsSkuVal'] = that.detail.Goods_Sku_Name_List[0].Sku_Value_List[0].Sku_Val;
+      that.detail['skuValPrice'] = that.detail.Goods_Sku_Name_List[0].Sku_Value_List[0].Sale_Price;
       WxParse.wxParse('detailInfo', 'html', that.detail.Detail_Info, this);
       that.$apply();
     })
@@ -181,7 +182,8 @@ export default class goodsDetail extends wepy.page {
          openId:openId,
          goodsId:this.goodsId,
          skuVal:this.detail.goodsSkuVal,
-         orderNum: this.orderNum
+         orderNum: this.orderNum,
+         price: this.detail.skuValPrice
       }
     })
     .then(res=>{
@@ -213,7 +215,8 @@ export default class goodsDetail extends wepy.page {
          openId:openId,
          goodsId:this.goodsId,
          skuVal:this.detail.goodsSkuVal,
-         orderNum: this.orderNum
+         orderNum: this.orderNum,
+         price: this.detail.skuValPrice
       }
     })
     .then(res=>{
@@ -228,7 +231,7 @@ export default class goodsDetail extends wepy.page {
         this.$apply();
       }, 100);
       wepy.navigateTo({
-        url: "/pages/comfire_order?goodsId=" + that.goodsId
+        url: "/pages/comfire_order?goodsId=" + that.goodsId + '&goodsSkuVal=' + that.detail.goodsSkuVal
       });
     })
     .catch(err=>{
@@ -325,6 +328,7 @@ export default class goodsDetail extends wepy.page {
           }
       });
       this.detail.goodsSkuVal = this.detail.Goods_Sku_Name_List[nameIndex].Sku_Value_List[valIndex].Sku_Val;
+      this.detail.skuValPrice = this.detail.Goods_Sku_Name_List[nameIndex].Sku_Value_List[valIndex].Sale_Price;
       this.$apply();
     },
     onShareAppMessage: function(res) {

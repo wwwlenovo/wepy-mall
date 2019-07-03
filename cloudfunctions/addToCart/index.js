@@ -17,7 +17,8 @@ exports.main = async (event, context) => {
         openId:event.openId,
         goodsId:event.goodsId,
         skuVal:event.skuVal,
-        orderNum: event.orderNum
+        orderNum: event.orderNum,
+        price: event.price
         }
       });
   }else {
@@ -27,7 +28,8 @@ exports.main = async (event, context) => {
         skuVal:event.skuVal
     }).update({
         data:{
-         orderNum: event.orderNum
+         orderNum: event.orderNum,
+         price: event.price
          }
        });
   }
