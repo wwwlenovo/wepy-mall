@@ -183,7 +183,9 @@ export default class goodsDetail extends wepy.page {
          goodsId:this.goodsId,
          skuVal:this.detail.goodsSkuVal,
          orderNum: this.orderNum,
-         price: this.detail.skuValPrice
+         price: this.detail.skuValPrice,
+         goodsName: this.detail.Product_Name,
+         logo: this.detail.logo
       }
     })
     .then(res=>{
@@ -216,7 +218,9 @@ export default class goodsDetail extends wepy.page {
          goodsId:this.goodsId,
          skuVal:this.detail.goodsSkuVal,
          orderNum: this.orderNum,
-         price: this.detail.skuValPrice
+         price: this.detail.skuValPrice,
+         goodsName: this.detail.Product_Name,
+         logo: this.detail.logo
       }
     })
     .then(res=>{

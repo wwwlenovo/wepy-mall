@@ -18,7 +18,9 @@ exports.main = async (event, context) => {
         goodsId:event.goodsId,
         skuVal:event.skuVal,
         orderNum: event.orderNum,
-        price: event.price
+        price: event.price,
+        logo: event.logo,
+        goodsName: event.goodsName
         }
       });
   }else {
@@ -29,7 +31,9 @@ exports.main = async (event, context) => {
     }).update({
         data:{
          orderNum: event.orderNum,
-         price: event.price
+         price: event.price,
+         logo: event.logo,
+         goodsName: event.goodsName
          }
        });
   }

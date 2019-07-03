@@ -30,15 +30,15 @@
   <swipeDelete :swipeData="item" @delItem.user="handleDelItem">
       <view class="goods-info">
         <view class="img-box">
-          <image src="{{item.thumLogo}}" class="img" />
+          <image src="{{item.logo}}" class="img" />
         </view>
         <view class="text-box">
           <view class="goods-title">{{item.goodsName}}</view>
-          <view class="goods-label">{{item.goodsSkuValName}}</view>
+          <view class="goods-label">{{item.skuVal}}</view>
           <view class="goods-price">¥ {{item.price}}</view>
           <view class="buy-num">
-            <view class="jian-btn {{item.num==1? 'disabled' : ''}}" catchtap="jianBtnTap" data-index="{{index}}" data-id="{{item.id}}">-</view>
-            <input type="number" value="{{item.num}}" disabled/>
+            <view class="jian-btn {{item.orderNum==1? 'disabled' : ''}}" catchtap="jianBtnTap" data-index="{{index}}" data-id="{{item.id}}">-</view>
+            <input type="number" value="{{item.orderNum}}" disabled/>
             <view class="jia-btn " catchtap="jiaBtnTap" data-index="{{index}}" data-id="{{item.id}}">+</view>
           </view>
         </view>
@@ -132,30 +132,18 @@ export default class ComfireOrder extends wepy.page {
     })
     .then(order => {
       console.log(order);
+      let res = order.result;
+      that.list = res.data;
+      that.totalPrice = res.totalPrice;
+      that.actualPrice = that.totalPrice;
+      that.is_exit_address = res.hasDefaultAddress;
+      that.address = res.defaultAddress;
+      that.$apply();
     })
-    const json = await api.preOrder({
-      query: {
-        openId: openId,
-        goodsId: that.goodsId
-      }
-    });
-    if (json.data.code == 0) {
-      let data = json.data;
-      this.list = data.goodsList;
-      this.totalPrice = data.totalPrice;
-      this.actualPrice = data.actualPrice;
-      this.is_exit_address = data.hasDefaultAddress;
-      this.address = data.defaultAddress;
-      this.total_jf_num = data.userScore;
-      this.can_use_score = data.canUseScore;
-      this.deduScore = data.deduScore;
-      this.deduFee = data.deduFee;
-      this.jf_num = data.canUseScore;
-      this.reduce_fee = data.reduceFee;
-    } else {
-      tip.error(json.data.msg)
-    }
-    that.$apply();
+    .catch(err=>{
+      console.log(err);
+      tip.error("获取订单错误");
+    })
   }
 
   async getAddressInfo(id) {
