@@ -166,7 +166,7 @@ export default class goodsDetail extends wepy.page {
     })
     .catch(err => {
       console.log(err);
-      tip.error(err.toSring());
+      tip.error("获取商品信息错误");
     });
   }
   computed = {}
