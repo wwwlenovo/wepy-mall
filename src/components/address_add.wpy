@@ -56,7 +56,7 @@
       <view class="list_item">
         <view class="title">设置默认地址:</view>
         <view class="input tr" @tap="changeCheckBoxState">
-          <icon type="success" size="20" color="{{isDefult? 'red':'#999'}}" />
+          <icon type="success" size="20" color="{{isDefault? 'red':'#999'}}" />
         </view>
       </view>
     </view>
@@ -75,7 +75,7 @@ import {
 import AreaPicker from "./common/wepy-area-picker"
 export default class AddressAdd extends wepy.component {
   data = {
-    isDefult: false,
+    isDefault: false,
     province: '',
     city: '',
     area: '',
@@ -91,33 +91,37 @@ export default class AddressAdd extends wepy.component {
   async addAddress(address) {
     let that = this;
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
-    let isDefult = 0;
-    if (this.isDefult) {
-      isDefult = 1;
+    let isDefault = 0;
+    if (this.isDefault) {
+      isDefault = 1;
     }
     let openId = userSpecialInfo.openid;
-    const json = await api.saveAddress({
-      query: {
+    wx.cloud.callFunction({
+      name: 'saveAddress',
+      data:{
         openId: openId,
         address: address,
-        isDef: isDefult,
+        isDefault: isDefault,
         province:that.provinceCode,
         city:that.cityCode,
         area:that.areaCode
       }
-    });
-    if (json.data.code == 0) {
-      //0 列表 1新增 2编辑 (显示列表)
+    })
+    .then(res => {
+            //0 列表 1新增 2编辑 (显示列表)
       this.$emit('currentPage', 0);
       this.$emit('refreshAddList', 'hehe');
-    } else {
-      tip.error(json.data.msg)
-    }
-    that.showLoading = false;
+      that.showLoading = false;
+    })
+    .catch(err => {
+      tip.error("地址添加失败");
+      that.showLoading = false;
+    })
+    
   }
   methods = {
     changeCheckBoxState() {
-      this.isDefult = !this.isDefult;
+      this.isDefault = !this.isDefault;
     },
     up() {
       this.$emit('upup', 'hehe'); //主动触发upup方法，'hehe'为向父组件传递的数据
