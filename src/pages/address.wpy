@@ -70,7 +70,7 @@ export default class Address extends wepy.page {
       }
     })
     .then(res => {
-      this.receiverInfo=res.result.data.receiverInfo;
+      this.receiverInfo=res.result.data;
       this.$invoke("addressEdit","refresh", this.receiverInfo);
       that.showLoading = false;
     })

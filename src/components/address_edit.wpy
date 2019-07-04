@@ -31,13 +31,13 @@
       <view class="list_item">
         <view class="title">收货人姓名:</view>
         <view class="input">
-          <input type="text" name="receiverName" value="{{editInfo.receiverName}}" />
+          <input type="text" name="receiverName" value="{{editInfo.address.receiverName}}" />
         </view>
       </view>
       <view class="list_item">
         <view class="title">联系电话:</view>
         <view class="input">
-          <input type="text" name="mobile" value="{{editInfo.mobile}}"/>
+          <input type="text" name="mobile" value="{{editInfo.address.mobile}}"/>
         </view>
       </view>
       <view class="list_item">
@@ -50,7 +50,7 @@
       <view class="list_item">
         <view class="title">详细地址:</view>
         <view class="input">
-          <input type="text" name="addressDetail" value="{{editInfo.addressDetail}}" />
+          <input type="text" name="addressDetail" value="{{editInfo.address.addressDetail}}" />
         </view>
       </view>
       <view class="list_item">
@@ -83,12 +83,9 @@ export default class AddressEdit extends wepy.component {
       type: Object
     },
     id: '',
-    province: '',
-    city: '',
-    area: '',
-    provinceCode: '',
-    cityCode: '',
-    areaCode: ''
+    province: {},
+    city: {},
+    area: {}
   }
 
   components = {
@@ -157,20 +154,17 @@ export default class AddressEdit extends wepy.component {
       console.log('form发生了submit事件，携带数据为：', e.detail.value)
     },
     refresh(val) {
-      console.log(val);
       if (val == undefined) return;
-      console.log("val.....", val);
-      this.editInfo = val;
+      this.editInfo = val[0];
       console.log(this.editInfo);
       this.id = this.editInfo._id;
       if(this.editInfo.isDefault==1){
         this.isDefault=true
       }
-      console.log("==========ee=========");
-      console.log(this.isDefault);
-      this.province = { code: this.editInfo.provinceCode, name: this.editInfo.provinceName };
-      this.city = { code: this.editInfo.areaCode, name:this.editInfo.areaName };
-      this.area = { code: this.editInfo.cityCode, name: this.editInfo.cityName };
+
+      this.province = this.editInfo.province;
+      this.city = this.editInfo.city;
+      this.area = this.editInfo.area;
 
       this.$apply();
     },
@@ -181,10 +175,6 @@ export default class AddressEdit extends wepy.component {
       this.province = province;
       this.city = city;
       this.area = area;
-
-      this.provinceCode = province.code;
-      this.cityCode = city.code;
-      this.areaCode = area.code;
       this.$apply();
     }
   }
