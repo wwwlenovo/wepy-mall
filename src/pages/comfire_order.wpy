@@ -9,12 +9,12 @@
       <view class="address_info" wx:else>
         <view class="title">
           <view class="user_info">
-            <text class="name">{{address.receiverName}}</text>
-            <text class="phone">{{address.mobile}}</text>
+            <text class="name">{{address.address.receiverName}}</text>
+            <text class="phone">{{address.address.mobile}}</text>
           </view>
           <view class="active_address">
             <text class="defult" wx:if="{{address.isdefault==1}}"> [默认]</text>
-            {{address.addressDetail}}
+            {{address.address.addressDetail}}
           </view>
         </view>
         <view class="arrow">&gt;</view>
@@ -81,7 +81,8 @@ import tip from '@/utils/tip';
 import {
   SYSTEM_INFO,
   USER_SPECICAL_INFO,
-  ADDRESS_ID
+  ADDRESS_ID,
+  CURRENT_GOODS_INFO
 } from '@/utils/constant';
 import swipeDelete from '@/components/common/wepy-swipe-delete'
 export default class ComfireOrder extends wepy.page {
@@ -105,19 +106,11 @@ export default class ComfireOrder extends wepy.page {
     totalPrice:0,
     actualPrice : 0,
     purchaseType : 1,
-    //总积分
-    total_jf_num: 0,
-    can_use_score:0,
-    deduScore:0,
-    deduFee : 0,
-    //输入抵扣积分
-    jf_num: 0,
-    reduce_fee : 0,
     operating: false
   }
 
   //获取订单详情
-  async getOrderDetailInfo() {
+  async getOrderDetailInfo(useDefault) {
     let that = this;
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
@@ -136,8 +129,12 @@ export default class ComfireOrder extends wepy.page {
       that.list = res.data;
       that.totalPrice = res.totalPrice;
       that.actualPrice = that.totalPrice;
-      that.is_exit_address = res.hasDefaultAddress;
-      that.address = res.defaultAddress;
+      if(!useDefault){
+        
+      }else{
+        that.is_exit_address = res.hasDefaultAddress;
+        that.address = res.defaultAddress;
+      }
       that.$apply();
     })
     .catch(err=>{
@@ -155,6 +152,7 @@ export default class ComfireOrder extends wepy.page {
       }
     })
     .then(res => {
+      console.log(res)
       if(res.result.data.length!==0){
         this.is_exit_address = true;
         this.address = res.result.data[0];
@@ -171,13 +169,19 @@ export default class ComfireOrder extends wepy.page {
     this.actualPrice = 0;
     this.totalPrice = 0;
     this.operating = false;
-    that.goodsId = option.goodsId==undefined?"":option.goodsId;
-    this.goodsSkuVal = option.goodsSkuVal==undefined?"":option.goodsSkuVal;
-    that.getOrderDetailInfo();
     let from = option.from==undefined?"":option.from;
+    let useDefault = true;
     if (from=="selAdd") {
-      this.getAddressInfo(wepy.getStorageSync(ADDRESS_ID))
+      useDefault = false;
+      that.getAddressInfo(wepy.getStorageSync(ADDRESS_ID));
+      let goodsInfo = wepy.getStorageSync(CURRENT_GOODS_INFO);
+      this.goodsId = goodsInfo.goodsId;
+      this.goodsSkuVal = goodsInfo.goodsSkuVal;
+    }else {
+      this.goodsId = option.goodsId==undefined?"":option.goodsId;
+      this.goodsSkuVal = option.goodsSkuVal==undefined?"":option.goodsSkuVal;
     }
+    that.getOrderDetailInfo(useDefault);
   }
   computed = {
 
@@ -349,16 +353,19 @@ export default class ComfireOrder extends wepy.page {
       if (!this.is_exit_address) {
         await tip.confirm('你未设置收货地址，请设置地址');
         wepy.navigateTo({
-          url: "/pages/address?type=order"
+          url: `/pages/address?type=order`
         })
         return false;
       }
       this.goToPay(fId);
     },
     setAddress() {
-      wepy.navigateTo({
-        url: "/pages/address?type=order"
+      wepy.setStorageSync(CURRENT_GOODS_INFO,{
+        goodsId: this.goodsId,
+        goodsSkuVal: this.goodsSkuVal
       })
+      wepy.redirectTo({
+         url: `/pages/address?type=order`})
     },
     jianBtnTap(e) {
       if (this.operating) {
