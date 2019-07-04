@@ -4,5 +4,5 @@ const db = cloud.database()
 const addressCollection = db.collection('Address')
 
 exports.main = async (event, context) => {
-    const address = await addressCollection.where({openId:event.openId}).get();
+    return await addressCollection.where({openId:event.openId}).get();
 }

@@ -45,8 +45,11 @@ export default class Address extends wepy.page {
       }
     })
     .then(res => {
-      that.addressList = res.result.data;
-      that.$invoke("addressList","refreshList", this.addressList);
+      console.log(res);
+      if(res.result!== null){
+        that.addressList = res.result.data;
+        that.$invoke("addressList","refreshList", this.addressList);
+      }
       that.showLoading = false;
     })
     .catch(err => {
@@ -98,7 +101,7 @@ export default class Address extends wepy.page {
 
   }
   methods = {
-    getCurrentPage(cur,id) {
+    getCurrentPage(cur, id) {
       this.currentPage = cur;
       if (cur!=1&&cur!=0) {
         this.receiverInf(id);
@@ -106,11 +109,11 @@ export default class Address extends wepy.page {
     }
   }
   onUnload() {
-    // if (this.currentPage !== 0) {
-    //   wx.navigateTo({
-    //     url: "/pages/address"
-    //   })
-    // }
+    if (this.currentPage !== 0) {
+      wx.navigateTo({
+        url: "/pages/address"
+      })
+    }
   }
   events = {
       refreshAddList(msg){

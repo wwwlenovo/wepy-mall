@@ -112,12 +112,13 @@ export default class AddressEdit extends wepy.component {
         openId: openId,
         address: address,
         isDefault: isDefault,
-        province:that.provinceCode,
-        city:that.cityCode,
-        area:that.areaCode
+        province:that.province,
+        city:that.city,
+        area:that.area
       }
     })
     .then(res => {
+      console.log(res)
             //0 列表 1新增 2编辑 (显示列表)
       this.$emit('currentPage', 0);
       this.$emit('refreshAddList', 'hehe');

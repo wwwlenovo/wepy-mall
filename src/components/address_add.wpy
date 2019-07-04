@@ -102,9 +102,9 @@ export default class AddressAdd extends wepy.component {
         openId: openId,
         address: address,
         isDefault: isDefault,
-        province:that.provinceCode,
-        city:that.cityCode,
-        area:that.areaCode
+        province:that.province,
+        city:that.city,
+        area:that.area
       }
     })
     .then(res => {

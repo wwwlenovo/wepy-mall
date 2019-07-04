@@ -6,12 +6,12 @@
           <view class="address_list" @tap="tapSelAddress" data-id="{{item._id}}">
             <view class="title">
               <view class="user_info">
-                <text class="name">{{item.receiverName}}</text>
-                <text class="phone">{{item.mobile}}</text>
+                <text class="name">{{item.address.receiverName}}</text>
+                <text class="phone">{{item.address.mobile}}</text>
               </view>
               <view class="active_address">
                 <text class="defult" wx:if="{{item.isDefault==1}}"> [默认]</text>
-                {{item.provinceName}} {{item.cityName}} {{item.areaName}} {{item.adressDetail}}
+                {{item.province.name}} {{item.city.name}} {{item.area.name}} {{item.adress.addressDetail}}
               </view>
             </view>
             <view class="arrow"  @tap.stop="edit" data-id="{{item._id}}"><i class="iconfont icon-edit" ></i></view>
@@ -82,7 +82,7 @@ export default class AddressList extends wepy.component {
     edit(e) {
       var id = e.currentTarget.dataset.id;
       //0 列表 1新增 2编辑
-      this.$emit('currentPage', 2,id);
+      this.$emit('currentPage', 2, id);
     },
     //左滑删除
     handleDelItem(itemData) {
@@ -94,7 +94,6 @@ export default class AddressList extends wepy.component {
 
     refreshList(val){
       if (val==undefined) return;
-      console.log("val.....",val);
       this.addressList = val;
       this.$apply();
     },
@@ -107,7 +106,7 @@ export default class AddressList extends wepy.component {
       if (this.type!="order") {
         return;
       }
-      var id = e.currentTarget.dataset._id;
+      var id = e.currentTarget.dataset.id;
       console.log("id=="+id);
       wepy.setStorageSync(ADDRESS_ID,id);
       wepy.redirectTo({

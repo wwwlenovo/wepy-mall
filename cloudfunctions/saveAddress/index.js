@@ -4,7 +4,7 @@ const db = cloud.database()
 const addressCollection = db.collection('Address')
 
 exports.main = async (event, context) => {
-    if(event.id){
+    if(event.id!== ""){
         return await addressCollection.where({
             _id:event.id,
             openId:event.openId
