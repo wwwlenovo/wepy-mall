@@ -161,8 +161,8 @@ export default class AddressEdit extends wepy.component {
       console.log("val.....", val);
       this.editInfo = val;
       console.log(this.editInfo);
-      this.id = this.editInfo.id;
-      if(this.editInfo.isDef==1){
+      this.id = this.editInfo._id;
+      if(this.editInfo.isDefault==1){
         this.isDefault=true
       }
       console.log("==========ee=========");
