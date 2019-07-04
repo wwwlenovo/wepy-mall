@@ -3,7 +3,7 @@
     <view class="header">
       <view class="header_content">
         <image class="avatarUrl" src="{{avatarUrl}}"></image>
-        <view class="nickName cfff">{{nickName}}</view>
+        <view class="nickName">{{nickName}}</view>
       </view>
     </view>
     <view class="info_block">
@@ -102,7 +102,7 @@ export default class Index extends wepy.page {
 </script>
 <style lang="less">
 .header {
-  background: #ff6a3c;
+  background: #f2f0edf0;
   height: 260rpx;
   width: 100%;
 }
