@@ -1,7 +1,7 @@
 {
-  "name": "wxYuHanStore",
-  "version": "1.0.2",
-  "description": "wxYuHanStore project",
+  "name": "tea-mall",
+  "version": "1.0.0",
+  "description": "tea mall project",
   "main": "dist/app.js",
   "scripts": {
     "dev": "wepy build --watch",
@@ -13,7 +13,7 @@
   "wepy": {
     "module-a": false
   },
-  "author": "yongqing <490844594@qq.com>",
+  "author": "",
   "license": "MIT",
   "dependencies": {
     "less": "^3.9.0",
