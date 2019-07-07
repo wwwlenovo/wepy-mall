@@ -56,7 +56,6 @@
 
 <script>
   import wepy from 'wepy';
-  import api from '@/api/api';
   import tip from '@/utils/tip';
   import {
     USER_SPECICAL_INFO

@@ -15,7 +15,6 @@ import wepy from 'wepy';
 import AddressList from "../components/address_list";
 import AddressAdd from "../components/address_add";
 import AddressEdit from "../components/address_edit";
-import api from "../api/api";
 import tip from '@/utils/tip';
 import {
   USER_SPECICAL_INFO

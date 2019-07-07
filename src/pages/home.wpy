@@ -17,7 +17,6 @@
 </template>
 <script>
 import wepy from 'wepy';
-import api from '@/api/api';
 import tip from '@/utils/tip'
 import Discover from '@/components/discover'
 import Bombscreen from '@/components/bomb_screen'

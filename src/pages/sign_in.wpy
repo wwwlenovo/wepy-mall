@@ -36,7 +36,6 @@
 
 <script>
   import wepy from 'wepy';
-  import api from '@/api/api';
   import Tab from '@/components/tab'
   import tip from '@/utils/tip'
   import {
