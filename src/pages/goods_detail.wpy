@@ -235,7 +235,7 @@ export default class goodsDetail extends wepy.page {
         this.$apply();
       }, 100);
       wepy.navigateTo({
-        url: "/pages/comfire_order?goodsId=" + that.goodsId + '&goodsSkuVal=' + that.detail.goodsSkuVal
+        url: "/pages/confirm_order?goodsId=" + that.goodsId + '&goodsSkuVal=' + that.detail.goodsSkuVal
       });
     })
     .catch(err=>{

@@ -1,6 +1,6 @@
 <!--确认订单-->
 <template>
-  <view class="comfire_order">
+  <view class="confirm_order">
     <view class="address" @tap="setAddress">
       <view class="empty_address" wx:if="{{!is_exit_address}}">
         <view class="title">设置收货地址</view>

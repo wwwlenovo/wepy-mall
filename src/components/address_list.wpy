@@ -110,7 +110,7 @@ export default class AddressList extends wepy.component {
       console.log("id=="+id);
       wepy.setStorageSync(ADDRESS_ID,id);
       wepy.redirectTo({
-        url: "/pages/comfire_order?from=selAdd"
+        url: "/pages/confirm_order?from=selAdd"
       })
     }
   }

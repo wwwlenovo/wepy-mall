@@ -296,7 +296,7 @@
           return;
         }
         wepy.navigateTo({
-          url: "/pages/comfire_order?purchasetype=" + purType
+          url: "/pages/confirm_order?purchasetype=" + purType
         })
       },
       goIndex() {

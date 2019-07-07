@@ -33,7 +33,7 @@ export default class extends wepy.app {
       'pages/messages',
       'pages/setting',
       'pages/goods_detail',
-      'pages/comfire_order',
+      'pages/confirm_order',
       'pages/address',
       'pages/order_detail',
       'pages/filter',
