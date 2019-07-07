@@ -188,9 +188,27 @@ export default class ComfireOrder extends wepy.page {
 
   async goToPay(formId) {
     //测试调用接口用，可注释
-    tip.loading("提交订单中");
+   // tip.loading("提交订单中");
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
+    wx.cloud.callFunction({
+    name: 'createOrder',
+    data:{
+         openId:openId,
+         list:this.list,
+         totalPrice: this.totalPrice,
+         status:0
+      }
+    })
+    .then(res =>{
+      if(res.result.errMsg == "collection.add:ok"){
+        console.log(res.result._id);
+      }
+    })
+    .then(()=>{
+      //TODO:PAY 
+    })
+    
     // const json = await api.saveByCart({
     //   query: {
     //     openId: openId,

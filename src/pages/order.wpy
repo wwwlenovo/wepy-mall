@@ -21,6 +21,7 @@ import {
 import OrderItem from '@/components/order_item'
 import BottomLoadMore from "../components/common/bottomLoadMore"
 import Placeholder from "../components/common/placeholder"
+import tip from '@/utils/tip'
 export default class Order extends wepy.page {
   config = {
     navigationBarTitleText: "我的订单",
@@ -34,7 +35,7 @@ export default class Order extends wepy.page {
   data = {
     winHeight: 0,
     totalCount: 0,
-    tabList: ["全部订单", "待支付", "待收货", "已完成"],
+    tabList: ["全部订单", "待支付", "已完成"],
     orderList: [],
     currentPage: 1,
     is_empty: false,
@@ -55,49 +56,48 @@ export default class Order extends wepy.page {
     receiveFlg : 0
   }
 
-  async getMyOrder(currentPage, size,refresh) {
+  async getMyOrder(currentPage, size, refresh) {
 
     console.log("refresh值："+refresh);
     let that = this;
-    console.log("orderStatus值");
     console.log("orderStatus值" + that.orderStatus);
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
-    const json = await api.getMyOrderList({
-      query: {
+    wx.cloud.callFunction({
+    name: 'getOrder',
+    data:{
         openId: openId,
-        orderStatus: that.orderStatus,
-        receiveFlg : that.receiveFlg,
+        orderStatus: that.orderStatus || 0,
         page: currentPage || 1,
         size: size || 10,
-        type: 1 //正常单
       }
-    });
-    if (json.data.code == 0) {
-      console.log("json.data.list");
-      console.log(json.data.list);
+    })
+    .then(res => {
       if (refresh) {
-        that.orderList = json.data.list;
+        that.orderList = res.result.data;
       } else {
-        that.orderList = [...that.orderList, ...json.data.list];
+        that.orderList = [...that.orderList, ...res.result.data];
       }
-      that.page_total = json.data.page_total;
-      that.totalCount = json.data.totalCount;
+      that.page_total = res.result.page_total;
+      that.totalCount = res.result.total;
       console.log("条目数：" + that.totalCount);
-      if (json.data.page_total == 0) {
+      if (that.page_total == 0) {
         //暂无数据
         that.is_empty = true;
       } else {
         that.is_empty = false;
       }
-      that.getMyOrderSize();
+      //that.getMyOrderSize();
       console.log("list返回数据");
       console.log(that.orderList);
-    } else {
-      tip.error(json.data.msg)
-    }
-    that.showLoading = false;
-    that.$apply();
+      that.showLoading = false;
+      that.$apply();
+    })
+    .catch(err => {
+      that.showLoading = false;
+      console.log(err);
+      tip.error("获取订单错误");
+    });
   }
 
   async getMyOrderSize() {
@@ -205,7 +205,7 @@ export default class Order extends wepy.page {
     console.log("加载更多");
     let that = this;
     that.showLoading = true;
-    console.log(that.page_total + "232===" + that.currentPage);
+    console.log(that.page_total + "===" + that.currentPage);
     //判断总页数是否大于翻页数
     if ((that.page_total) > that.currentPage) {
       //防止重复加载

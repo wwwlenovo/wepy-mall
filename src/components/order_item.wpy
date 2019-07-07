@@ -7,18 +7,13 @@
       <view class="order_list_top">
         <view class="left">
           <view class="title">订单号：
-            <text class="order_doc">{{item.orderNo}}</text>
+            <text class="order_doc">{{item._id}}</text>
           </view>
           <view class="title mt10">提交时间：
             <text class="order_doc">{{item.createTime}}</text>
           </view>
         </view>
-
-        <view class="order_state" wx:if="{{item.auditStatus==5}}">
-          审批中
-        </view>
-        <view class="order_state" wx:elif="{{item.auditStatus==-1}}"> 审批不通过 </view>
-        <view wx:else>
+        <view>
           <text class="defult" wx:if="{{item.status==0}}">
             <view class="order_state">待支付</view>
           </text>
@@ -28,14 +23,13 @@
           <view class="order_state" wx:if="{{item.status==3}}">待评论</view>
         </view>
     </view>
-
     <view class="order_list_center">
       <shopItemList :list.sync="item.orderItemList"></shopItemList>
     </view>
   </navigator>
   <view class="order_list_footer">
     <view class="reveiveMoney c333">应付款：
-      <text class="num">{{item.goodsPrices}}</text>
+      <text class="num">{{item.totalPrice}}</text>
     </view>
 
     <view class="order_state" wx:if="{{item.auditStatus==5}}">
@@ -163,8 +157,7 @@ export default class orderItem extends wepy.component {
   }
 
   onLoad() {
-    console.log("===========lzz返回数据lzz=========")
-    console.log(this.orderList);
+
   }
 }
 

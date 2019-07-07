@@ -7,7 +7,7 @@
       </view>
     </view>
     <view class="info_block">
-      <navigator class="item" url="/pages/register" wx:if="{{bShowBind}}">
+      <!-- <navigator class="item" url="/pages/register" wx:if="{{bShowBind}}">
         <view>
           <view class="item_content">
             <image class="item_img" src="../images/icon_my_01.png"></image>
@@ -16,7 +16,7 @@
           <view class="tip">绑定手机号可更好的让我们服务好您！</view>
         </view>
         <view class="arrow">&gt;</view>
-      </navigator>
+      </navigator> -->
       <navigator class="item" url="/pages/order">
         <view class="item_content">
           <image class="item_img" src="../images/icon_my_02.png"></image>
@@ -54,28 +54,28 @@ export default class Index extends wepy.page {
     nickName: "",
     bShowBind:false
   }
-  async getUserInfo(phone,code) {
-    let that = this;
-    let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
-    let openId = userSpecialInfo.openid;
-    const json = await api.getUserInfo({
-      query: {
-        openId: openId
-      }
-    });
+  // async getUserInfo(phone,code) {
+  //   let that = this;
+  //   let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
+  //   let openId = userSpecialInfo.openid;
+  //   const json = await api.getUserInfo({
+  //     query: {
+  //       openId: openId
+  //     }
+  //   });
 
-    if (json.data.code == 0) {
-      if (json.data.user.mobile.length>0) {
-        this.bShowBind=false;
-      } else {
-        this.bShowBind = true;
-      }
-      that.$apply();
-    } else {
-      tip.error(json.data.msg)
-    }
-    that.showLoading = false;
-  }
+  //   if (json.data.code == 0) {
+  //     if (json.data.user.mobile.length>0) {
+  //       this.bShowBind=false;
+  //     } else {
+  //       this.bShowBind = true;
+  //     }
+  //     that.$apply();
+  //   } else {
+  //     tip.error(json.data.msg)
+  //   }
+  //   that.showLoading = false;
+  // }
 
   onLoad() {
     let that = this;
@@ -84,8 +84,7 @@ export default class Index extends wepy.page {
     that.nickName = userInfo.nickName;
   }
   onShow(){
-    let that = this;
-    this.getUserInfo();
+    
   }
   computed = {
 

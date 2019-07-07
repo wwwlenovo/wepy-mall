@@ -24,19 +24,20 @@ export default class Authorize extends wepy.page {
       name: 'getOpenID'
     }).then(res => {
       wepy.setStorageSync(USER_SPECICAL_INFO,{openid:res.result.openid,appid:res.result.appid});
-    })
+    });
+    
     let res = await wepy.getSetting()
     if ((res.authSetting)['scope.userInfo']) {
       let userInfo = wepy.getStorageSync(USER_INFO)
       if (!userInfo.nickName) {
-        let data  = await wepy.getUserInfo()
-        if (data) {
-          wepy.setStorageSync(USER_INFO, data.userInfo)
-        }
-        let res = await wepy.login()
+        let res = await wepy.login();
         if (res.code) {
+          wepy.setStorageSync(USER_INFO, e.detail.userInfo);
           let systemInfo = wepy.getSystemInfoSync();
           wepy.setStorageSync(SYSTEM_INFO, systemInfo);
+          wepy.switchTab({
+              url: '/pages/home'
+          }) 
         }
       }
       wepy.switchTab({

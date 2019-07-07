@@ -53,7 +53,8 @@
 import wepy from 'wepy';
 import {
   SYSTEM_INFO,
-  USER_SPECICAL_INFO
+  USER_SPECICAL_INFO,
+  USER_INFO
 } from '@/utils/constant';
 export default class Messages extends wepy.page {
   config = {
@@ -70,24 +71,12 @@ export default class Messages extends wepy.page {
     let that = this;
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
-    const json = await api.getUserInfo({
-      query: {
-        openId: openId
-      }
-    });
-    if (json.data.code == 0) {
-      this.userInfo=json.data.user;
-      console.log("===================")
-      console.log(that.userInfo);
-      that.$apply();
-    } else {
-      tip.error(json.data.msg)
-    }
+    this.userInfo =wepy.getStorageSync(USER_INFO);
+    that.$apply();
     that.showLoading = false;
   }
   onLoad() {
     let that = this;
-
     //设置滚动高度
     let systemInfo = wepy.getStorageSync(SYSTEM_INFO);
     that.winHeight = systemInfo.windowHeight;

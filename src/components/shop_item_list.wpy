@@ -3,14 +3,14 @@
 <repeat for="{{list}}" key="index" index="index" item="item">
   <view class="good_list">
     <view class="image_box">
-      <image src="{{item.goodsThumLogo}}"></image>
+      <image src="{{item.logo}}"></image>
     </view>
     <view class="goods">
       <view class="product_name">{{item.goodsName}}</view>
-      <view class="product_rule">规格:{{item.goodsSkuVals}}</view>
+      <view class="product_rule">规格:{{item.skuVal}}</view>
       <view class="product_info">
         <view class="price">￥{{item.price}}</view>
-        <view class="goods_num">x{{item.num}}</view>
+        <view class="goods_num">x{{item.orderNum}}</view>
       </view>
 
       <view class="order_footer">
