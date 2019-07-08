@@ -224,12 +224,10 @@
       .then(res => {
         this.allChecked = !this.allChecked;
         this.totalPrice = 0;
-        if(this.allChecked){
-          for (var i = 0; i < this.list.length; i++) {
-            this.list[i].isChecked = !this.allChecked;
-            if (!this.allChecked) {
-              this.totalPrice += parseInt(this.list[i].totalPrice);
-            }
+        for (var i = 0; i < this.list.length; i++) {
+          this.list[i].isChecked = !this.allChecked;
+          if (!this.allChecked) {
+            this.totalPrice += parseInt(this.list[i].totalPrice);
           }
         }
         this.$apply();
