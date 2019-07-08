@@ -20,7 +20,8 @@ exports.main = async (event, context) => {
         orderNum: event.orderNum,
         price: event.price,
         logo: event.logo,
-        goodsName: event.goodsName
+        goodsName: event.goodsName,
+        isChecked: event.isChecked
         }
       });
   }else {

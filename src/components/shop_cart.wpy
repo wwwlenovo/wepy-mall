@@ -3,9 +3,9 @@
     <repeat for="{{list}}" key="index" index="index" item="item">
       <view class="list_box">
         <swipeDelete :swipeData="item" @delItem.user="handleDelItem">
-          <!-- <view class="a-goods-conts {{item.ischecked? 'active':''}}"  > -->
+          <!-- <view class="a-goods-conts {{item.isChecked? 'active':''}}"  > -->
           <view class="goods-info">
-            <icon class="icon_check" type="success" color="{{item.ischecked?'red':'rgb(153,153,153)'}}" @tap.stop="selectTap" data-index="{{index}}" data-id="{{item.id}}" size="20" />
+            <icon class="icon_check" type="success" color="{{item.isChecked?'red':'rgb(153,153,153)'}}" @tap.stop="selectTap" data-index="{{index}}" data-id="{{item._id}}" size="20" />
             <view class="img-box">
               <image src="{{item.thumLogo}}" class="img" />
             </view>
@@ -78,56 +78,63 @@
       let that = this;
       let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
       let openId = userSpecialInfo.openid;
-      const json = await api.cartList({
-        query: {
+      wx.cloud.callFunction({
+        name: 'getCartList',
+        data:{
           openId: openId
         }
-      });
-      if (json.data.code == 0) {
-        let data = json.data;
-        this.list = data.list;
+      })
+      .then(res => {
+        let data = res.result;
+        this.list = data.data;
         this.totalPrice = data.totalPrice;
         for (var i = 0; i < this.list.length; i++) {
-          if (!this.list[i].ischecked) {
+          if (!this.list[i].isChecked) {
             this.allChecked = false;
             break;
           }
         }
-      } else {
-        tip.error(json.data.msg)
-      }
-      that.$apply();
+      })
+      .catch(err => {
+        console.log(err);
+        tip.error("获取商品列表错误")；
+      })
     }
     onLoad() {
       let that = this;
       this.operating = false;
-      //that.list = bb.result.products;
-      //console.log(bb.result.products)
-      //that.getCartList();
     }
     computed = {}
-    async checkGoods(id, index, ischecked) {
+
+    async checkGoods(id, index, isChecked) {
       let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
       let openId = userSpecialInfo.openid;
-      const json = await api.cartCheck({
-        query: {
+      wx.cloud.callFunction({
+        name: 'cartUpdateCheck',
+        data:{
           openId: openId,
-          id: id
+          id:id,
+          all: false,
+          isChecked: !isChecked
         }
-      });
-      if (json.data.code == 0) {
-        // 购物车数据
-        this.list[index].ischecked = !ischecked;
-        if (this.list[index].ischecked) {
-          this.totalPrice += parseInt(this.list[index].priceSubtotal);
-        } else {
-          this.totalPrice -= parseInt(this.list[index].priceSubtotal);
+      })
+      .then(res => {
+        if(res.result.stats.updated !== 0){
+          this.list[index].isChecked = !isChecked;
+          if (this.list[index].isChecked) {
+            this.totalPrice += parseInt(this.list[index].totalPrice);
+          } else {
+            this.totalPrice -= parseInt(this.list[index].totalPrice);
+          }
         }
-      } else {
-        tip.error(json.data.msg)
-      }
-      this.$apply();
+         this.$apply();
+      })
+      .catch(err => {
+        console.log(err);
+      })
+     
     }
+
     async reduceGoodNum(id, num, index) {
       let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
       let openId = userSpecialInfo.openid;
@@ -148,6 +155,7 @@
       }
       this.$apply();
     }
+
     async addGoodNum(id, num, index) {
       let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
       let openId = userSpecialInfo.openid;
@@ -168,6 +176,7 @@
       }
       this.$apply();
     }
+
     async deleteGoods(itemData) {
       var id = itemData.id;
       let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
@@ -183,7 +192,7 @@
         let retList = [];
         for (var i = 0; i < this.list.length; i++) {
           if (this.list[i].id == id) {
-            if (this.list[i].ischecked) {
+            if (this.list[i].isChecked) {
               this.totalPrice -= parseInt(this.list[i].priceSubtotal);
             }
             continue;
@@ -214,7 +223,7 @@
       if (json.data.code == 0) {
         this.totalPrice = 0;
         for (var i = 0; i < this.list.length; i++) {
-          this.list[i].ischecked = !this.allChecked;
+          this.list[i].isChecked = !this.allChecked;
           if (!this.allChecked) {
             this.totalPrice += parseInt(this.list[i].priceSubtotal);
           }
@@ -234,8 +243,8 @@
       selectTap(e) {
         var id = e.currentTarget.dataset.id;
         var index = parseInt(e.currentTarget.dataset.index);
-        var ischecked = this.list[index].ischecked;
-        this.checkGoods(id, index, ischecked);
+        var isChecked = this.list[index].isChecked;
+        this.checkGoods(id, index, isChecked);
       },
       selectAll() {
         console.log("sele....");
@@ -278,7 +287,7 @@
         let bOneType = true;
         let index = 0;
         for (var i = 0; i < this.list.length; i++) {
-          if (this.list[i].ischecked) {
+          if (this.list[i].isChecked) {
             purType = this.list[i].type;
             if (index > 0) {
               if (purType != prePurType) {

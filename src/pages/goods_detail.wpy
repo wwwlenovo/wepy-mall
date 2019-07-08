@@ -240,7 +240,8 @@ export default class goodsDetail extends wepy.page {
          orderNum: this.orderNum,
          price: this.detail.skuValPrice,
          goodsName: this.detail.Product_Name,
-         logo: this.detail.logo
+         logo: this.detail.logo,
+         isChecked:true
       }
     })
     .then(res=>{
@@ -366,7 +367,7 @@ export default class goodsDetail extends wepy.page {
         console.log(res.target)
       }
       return {
-        title: this.detail.name,
+        title: `【沏氛】好茶一起分享`,
         path: '/pages/goods_detail?id=' + this.goodsId,
         success: function(res) {
           // 转发成功
