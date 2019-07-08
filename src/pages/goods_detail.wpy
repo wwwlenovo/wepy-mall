@@ -31,12 +31,33 @@
         </view>
       </view>
     </view>
-    <view class="detail-bottom">
+    <!-- <view class="detail-bottom">
       <view class="bottom-box">
         <view class="sy-bottom {{canOrder?'btn_cart':'cart_color'}}" @tap="takeCart">加入购物车</view>
         <view class="sy-bottom {{canOrder?'btn_order':'order_color'}}" @tap="takeOrder">{{purchaseText}}</view>
       </view>
-    </view>
+    </view> -->
+<van-goods-action>
+  <van-goods-action-icon
+    icon="share"
+    text="分享"
+    bind:click="onClickIcon"
+  />
+  <van-goods-action-icon
+    icon="cart-o"
+    text="购物车"
+    bind:click="onClickIcon"
+  />
+  <van-goods-action-button
+    text="加入购物车"
+    type="warning"
+    bind:click="takeCart"
+  />
+  <van-goods-action-button
+    text="立即购买"
+    bind:click="takeOrder"
+  />
+</van-goods-action>
     <view class="over_model {{hidden?'hidden':''}}"></view>
     <view class="panle_model {{hidden?'hidden':''}}" animation="{{animationData}}">
       <view class="model_content">

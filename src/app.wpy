@@ -27,7 +27,11 @@ export default class extends wepy.app {
       'pages/order_detail'
     ],
     usingComponents: {
-      "van-button": "components/vant/button/index"
+      "van-button": "components/vant/button/index",
+      "van-goods-action": "components/vant/goods-action/index",
+      "van-goods-action-icon": "components/vant/goods-action-icon/index",
+      "van-goods-action-button": "components/vant/goods-action-button/index",
+      "van-icon": "components/vant/icon/index"
     },
     window: {
       backgroundTextStyle: 'dark',

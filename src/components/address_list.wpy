@@ -14,7 +14,7 @@
                 {{item.province.name}} {{item.city.name}} {{item.area.name}} {{item.adress.addressDetail}}
               </view>
             </view>
-            <view class="arrow"  @tap.stop="edit" data-id="{{item._id}}"><i class="iconfont icon-edit" ></i></view>
+            <view class="arrow"  @tap.stop="edit" data-id="{{item._id}}"><van-icon name="edit" size="20px"/></view>
           </view>
         </swipeDelete>
       </view>
