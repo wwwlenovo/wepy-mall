@@ -24,7 +24,7 @@ import BottomLoadMore from "../components/common/bottomLoadMore"
 import Placeholder from "../components/common/placeholder"
 export default class Home extends wepy.page {
   config = {
-    navigationBarTitleText: '茶',
+    navigationBarTitleText: '沏氛',
   }
   components = {
     discover: Discover,
