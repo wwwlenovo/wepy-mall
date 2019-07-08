@@ -97,7 +97,7 @@
       })
       .catch(err => {
         console.log(err);
-        tip.error("获取商品列表错误")；
+        tip.error("获取商品列表错误");
       })
     }
     onLoad() {
