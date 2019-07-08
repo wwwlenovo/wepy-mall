@@ -41,12 +41,12 @@
   <van-goods-action-icon
     icon="share"
     text="分享"
-    bind:click="onClickIcon"
+    open-type='share'
   />
   <van-goods-action-icon
     icon="cart-o"
     text="购物车"
-    bind:click="onClickIcon"
+    bind:click="goCart"
   />
   <van-goods-action-button
     text="加入购物车"
@@ -281,6 +281,11 @@ export default class goodsDetail extends wepy.page {
     homePage() {
       wepy.switchTab({
         url: '/pages/home'
+      })
+    },
+    goCart(){
+      wepy.navigateTo({
+        url: "/pages/shop_cart"
       })
     },
     previewImage(e) {

@@ -15,16 +15,12 @@ export default class extends wepy.app {
       'pages/home_detail',
       'pages/shop_cart',
       'pages/info',
-      'pages/sign_in',
-      'pages/register',
       'pages/order',
       'pages/pay_success',
-      'pages/points_rule',
       'pages/setting',
       'pages/goods_detail',
       'pages/confirm_order',
-      'pages/address',
-      'pages/order_detail'
+      'pages/address'
     ],
     usingComponents: {
       "van-button": "components/vant/button/index",
