@@ -5,7 +5,12 @@ const db = cloud.database()
 const cartCollection = db.collection('Cart')
 
 exports.main = async (event, context) => {
-  return await cartCollection.where({
+  let goods = await cartCollection.where({
       openId:event.openId
   }).get();
+  for(let i=0;i<goods.data.length;i++){
+      let item = goods.data[i];
+      item["totalPrice"] = item.price*item.orderNum; 
+  }
+  return goods;
 }

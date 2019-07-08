@@ -7,7 +7,7 @@
           <view class="goods-info">
             <icon class="icon_check" type="success" color="{{item.isChecked?'red':'rgb(153,153,153)'}}" @tap.stop="selectTap" data-index="{{index}}" data-id="{{item._id}}" size="20" />
             <view class="img-box">
-              <image src="{{item.thumLogo}}" class="img" />
+              <image src="{{item.logo}}" class="img" />
             </view>
             <view class="text-box">
               <view class="goods-title">
@@ -17,14 +17,13 @@
               </view>
               <!--  -->
               <view class="lable">
-                <view class="goods-lable">{{item.goodsSkuValName}}</view>
-                <view class="bo-label" wx:if="{{item.type==2}}">补货</view>
+                <view class="goods-lable">{{item.skuVal}}</view>
               </view>
               <view class="goods-price">¥ {{item.price}}</view>
               <view class="buy-num">
-                <view class="jian-btn {{item.num==1? 'disabled' : ''}}" catchtap="jianBtnTap" data-index="{{index}}" data-id="{{item.id}}">-</view>
-                <input type="number" value="{{item.num}}" disabled/>
-                <view class="jia-btn {{item.num==1000? 'disabled' : ''}}" catchtap="jiaBtnTap" data-index="{{index}}" data-id="{{item.id}}">+</view>
+                <view class="jian-btn {{item.orderNum==1? 'disabled' : ''}}" catchtap="jianBtnTap" data-index="{{index}}" data-id="{{item._id}}">-</view>
+                <input type="number" value="{{item.orderNum}}" disabled/>
+                <view class="jia-btn {{item.orderNum==1000? 'disabled' : ''}}" catchtap="jiaBtnTap" data-index="{{index}}" data-id="{{item._id}}">+</view>
               </view>
             </view>
           </view>
@@ -87,13 +86,20 @@
       .then(res => {
         let data = res.result;
         this.list = data.data;
-        this.totalPrice = data.totalPrice;
-        for (var i = 0; i < this.list.length; i++) {
-          if (!this.list[i].isChecked) {
-            this.allChecked = false;
-            break;
+        this.totalPrice = 0;
+        this.list.forEach(value=>{
+          if(value.isChecked){
+            this.totalPrice += value.totalPrice
           }
+        });
+        if(this.list.every(value => {
+          return value.isChecked;
+        })){
+          this.allChecked = true;
+        }else {
+          this.allChecked = false;
         }
+        this.$apply();
       })
       .catch(err => {
         console.log(err);
@@ -102,6 +108,7 @@
     }
     onLoad() {
       let that = this;
+      this.getCartList();
       this.operating = false;
     }
     computed = {}
@@ -127,7 +134,14 @@
             this.totalPrice -= parseInt(this.list[index].totalPrice);
           }
         }
-         this.$apply();
+        if(this.list.every(value => {
+          return value.isChecked;
+        })){
+          this.allChecked = true;
+        }else {
+          this.allChecked = false;
+        }
+        this.$apply();
       })
       .catch(err => {
         console.log(err);
@@ -135,48 +149,37 @@
      
     }
 
-    async reduceGoodNum(id, num, index) {
-      let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
-      let openId = userSpecialInfo.openid;
-      const json = await api.cartUpdateNum({
-        query: {
-          openId: openId,
-          id: id,
-          num: num
-        }
-      });
-      if (json.data.code == 0) {
-        // 购物车数据
-        this.list[index].num = num;
-        this.totalPrice = this.totalPrice - this.list[index].price;
-        this.operating = false;
-      } else {
-        tip.error(json.data.msg)
+  async updateGoodNum(id, num, skuVal, index, flag) {
+    let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
+    let openId = userSpecialInfo.openid;
+    wx.cloud.callFunction({
+      name: 'cartUpdateNum',
+      data:{
+         openId:openId,
+         goodsId:id,
+         skuVal:skuVal,
+         orderNum: num
       }
-      this.$apply();
-    }
-
-    async addGoodNum(id, num, index) {
-      let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
-      let openId = userSpecialInfo.openid;
-      const json = await api.cartUpdateNum({
-        query: {
-          openId: openId,
-          id: id,
-          num: num
-        }
-      });
-      if (json.data.code == 0) {
-        // 购物车数据
-        this.list[index].num = num;
-        this.totalPrice = parseInt(this.totalPrice) + parseInt(this.list[index].price);
-        this.operating = false;
-      } else {
-        tip.error(json.data.msg)
+    })
+    .then(order => {
+      let res = order.result;
+      this.list = res.data;
+      this.list[index].num = num;
+      if(flag == "add"){
+        this.totalPrice = parseInt(this.totalPrice) + parseInt(res.totalPrice);
+      } else if(flag == "sub"){
+        this.totalPrice = parseInt(this.totalPrice) - parseInt(res.totalPrice);
       }
+      this.operating = false;
       this.$apply();
-    }
+    })
+    .catch(err => {
+      console.log(err);
+      tip.error("更新数量失败");
+    })
+  }
 
+  
     async deleteGoods(itemData) {
       var id = itemData.id;
       let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
@@ -210,29 +213,30 @@
     async checkAllGoods() {
       let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
       let openId = userSpecialInfo.openid;
-      let check = 0;
-      if (!this.allChecked) {//原来未选中
-        check = 1;
-      }
-      const json = await api.cartCheckAll({
-        query: {
+      wx.cloud.callFunction({
+        name: 'cartUpdateCheck',
+        data:{
           openId: openId,
-          check: check
+          all: true,
+          isChecked: !this.allChecked
         }
-      });
-      if (json.data.code == 0) {
+      })
+      .then(res => {
+        this.allChecked = !this.allChecked;
         this.totalPrice = 0;
-        for (var i = 0; i < this.list.length; i++) {
-          this.list[i].isChecked = !this.allChecked;
-          if (!this.allChecked) {
-            this.totalPrice += parseInt(this.list[i].priceSubtotal);
+        if(this.allChecked){
+          for (var i = 0; i < this.list.length; i++) {
+            this.list[i].isChecked = !this.allChecked;
+            if (!this.allChecked) {
+              this.totalPrice += parseInt(this.list[i].totalPrice);
+            }
           }
         }
-        this.allChecked = !this.allChecked;
-      } else {
-        tip.error(json.data.msg)
-      }
-      this.$apply();
+        this.$apply();
+      })
+      .catch(err => {
+        console.log(err);
+      })
     }
 
 
@@ -260,14 +264,15 @@
         this.operating = true;
         var id = e.currentTarget.dataset.id;
         var index = parseInt(e.currentTarget.dataset.index);
-        var num = this.list[index].num;
+        var num = this.list[index].orderNum;
+        let skuVal = this.list[index].skuVal;
         // 如果只有1件了，就不允许再减了
         if (num > 1) {
           num--;
         } else {
           return;
         }
-        this.reduceGoodNum(id, num, index);
+        this.updateGoodNum(id, num, skuVal, index);
       },
       jiaBtnTap(e) {
         if (this.operating) {
@@ -276,10 +281,11 @@
         this.operating = true;
         var id = e.currentTarget.dataset.id;
         var index = parseInt(e.currentTarget.dataset.index);
-        var num = this.list[index].num;
+        var num = this.list[index].orderNum;
+        let skuVal = this.list[index].skuVal;
         // 自增
         num++;
-        this.addGoodNum(id, num, index);
+        this.updateGoodNum(id, num, skuVal, index);
       },
       toPayOrder() {
         let purType = 1,
