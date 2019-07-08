@@ -9,15 +9,25 @@ const orderCollection = db.collection('Order')
 exports.main = async (event, context) => {
     const page = event.page;
     const size = event.size;
-    const count = await orderCollection.where({
-        openId:event.openId,
-        status: event.orderStatus
-    }).count();
-    let order = await orderCollection.where({
-        openId: event.openId,
-        status: event.orderStatus
-    }).skip((page - 1) * size).limit(size).get();
+    let count,order;
+    if (event.orderStatus == undefined) {
+         count = await orderCollection.where({
+            openId: event.openId
+        }).count();
+         order = await orderCollection.where({
+            openId: event.openId
+        }).skip((page - 1) * size).limit(size).get();
+    } else {
+         count = await orderCollection.where({
+            openId: event.openId,
+            status: event.orderStatus
+        }).count();
+         order = await orderCollection.where({
+            openId: event.openId,
+            status: event.orderStatus
+        }).skip((page - 1) * size).limit(size).get();
+    }
     order['total'] = count.total;
-    order['page_total'] = Math.ceil(count.total/size);
+    order['page_total'] = Math.ceil(count.total / size);
     return order;
 }

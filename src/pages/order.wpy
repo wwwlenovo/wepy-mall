@@ -35,39 +35,32 @@ export default class Order extends wepy.page {
   data = {
     winHeight: 0,
     totalCount: 0,
-    tabList: ["全部订单", "待支付", "已完成"],
+    tabList: ["全部订单", "待支付", "已支付"],
     orderList: [],
     currentPage: 1,
     is_empty: false,
-    orderStatus: "",
+    orderStatus: undefined,
     currentTab: 0,
     flag: 0,
     //是否显示 底部loading
     showLoading: true,
     //防止重复加载
     preventRepeatReuqest: false,
-    //待付款
-    pendingPayCount : 0,
-    //待发货
-    backrdersCount : 0,
-    //待收货
-    shippedCount : 0,
-
+    noPaidOrderCount : 0,
+    paidOrderCount : 0,
     receiveFlg : 0
   }
 
   async getMyOrder(currentPage, size, refresh) {
 
-    console.log("refresh值："+refresh);
     let that = this;
-    console.log("orderStatus值" + that.orderStatus);
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
     wx.cloud.callFunction({
     name: 'getOrder',
     data:{
         openId: openId,
-        orderStatus: that.orderStatus || 0,
+        orderStatus: that.currentTab==0?undefined:that.currentTab-1,
         page: currentPage || 1,
         size: size || 10,
       }
@@ -80,14 +73,13 @@ export default class Order extends wepy.page {
       }
       that.page_total = res.result.page_total;
       that.totalCount = res.result.total;
-      console.log("条目数：" + that.totalCount);
       if (that.page_total == 0) {
         //暂无数据
         that.is_empty = true;
       } else {
         that.is_empty = false;
       }
-      //that.getMyOrderSize();
+      that.getMyOrderSize();
       console.log("list返回数据");
       console.log(that.orderList);
       that.showLoading = false;
@@ -101,28 +93,26 @@ export default class Order extends wepy.page {
   }
 
   async getMyOrderSize() {
-    console.log("订单数量统计");
     let that = this;
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
-    const json = await api.getMyOrderSize({
-      query: {
+    wx.cloud.callFunction({
+    name: 'getOrderCount',
+    data:{
         openId: openId
       }
-    });
-    if (json.data.code == 0) {
-      //待付款
-      that.pendingPayCount = json.data.pendingPayCount;
-      //待发货
-      that.backrdersCount = json.data.backrdersCount;
-      //待收货
-      that.shippedCount = json.data.shippedCount;
-
+    })
+    .then(res => {
+      that.noPaidOrderCount = res.result.noPaidOrderCount;
+      that.paidOrderCount = res.result.paidOrderCount;
       //重写list
-      var dotList = ["全部订单", { name: "待支付", dotNum: that.pendingPayCount }, { name: "待收货", dotNum: that.backrdersCount }, "已完成"];
+      var dotList = ["全部订单", { name: "待支付", dotNum: that.noPaidOrderCount }, { name: "已支付", dotNum: that.paidOrderCount }];
       this.$invoke("tab", "changeList", dotList);
       that.$apply();
-    }
+    })
+    .catch(err => {
+      console.log(err);
+    })
   }
 
 
@@ -151,25 +141,15 @@ export default class Order extends wepy.page {
       console.log("cur");
       console.log(cur);
       if (cur == 0) {
-        console.log("所有订单类型");
-        that.orderStatus = "";
+        that.orderStatus = undefined;
         that.getMyOrder();
       } else if (cur == 1) {
-        console.log("未付款订单类型");
         that.orderStatus = 0;
         that.getMyOrder();
       } else if (cur == 2) {
-        console.log("待收货订单类型");
-        that.orderStatus = 2;
-        that.receiveFlg=2;
+        that.orderStatus = 1;
         that.getMyOrder();
-      } else if (cur == 3) {
-
-        console.log("已完成订单类型");
-        that.orderStatus = 4;
-        that.receiveFlg=4;
-        that.getMyOrder();
-      }
+      } 
       that.$apply();
     },
     /**
@@ -185,27 +165,19 @@ export default class Order extends wepy.page {
   }
   events = {
     refreshOrderList(msg){
-      console.log("msg值:"+msg);
-      if(msg==3){
-        this.currentTab=3;
-        this.$apply();
-        this.orderStatus = 4;
-      }
       this.getMyOrder(1,10,1);
     }
   }
   watch = {
     currentTab(val) {
-      console.log("====" + val)
+      console.log("Tab ====" + val)
     }
   }
 
   //加载更多
   onReachBottom() {
-    console.log("加载更多");
     let that = this;
     that.showLoading = true;
-    console.log(that.page_total + "===" + that.currentPage);
     //判断总页数是否大于翻页数
     if ((that.page_total) > that.currentPage) {
       //防止重复加载
@@ -214,24 +186,16 @@ export default class Order extends wepy.page {
       }
       that.preventRepeatReuqest = true;
       that.currentPage++;
-      console.log(this.currentTab);
       if (this.currentTab == 0) {
-        console.log("所有订单类型");
+        that.orderStatus = undefined;
         that.getMyOrder(that.currentPage);
       } else if (this.currentTab == 1) {
-        console.log("未付款订单类型");
         that.orderStatus = 0;
         that.getMyOrder(that.currentPage);
       } else if (this.currentTab == 2) {
-        console.log("待发货订单类型");
-        that.orderStatus = 2;
-        that.receiveFlg=2;
+        that.orderStatus = 1;
         that.getMyOrder(that.currentPage);
-      } else if (this.currentTab == 3) {
-        console.log("已完成订单类型");
-        that.orderStatus = 4;
-        that.getMyOrder(that.currentPage);
-      }
+      } 
       that.preventRepeatReuqest = false;
     } else {
       that.showLoading = false;
