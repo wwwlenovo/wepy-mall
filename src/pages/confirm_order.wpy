@@ -245,6 +245,9 @@ export default class ComfireOrder extends wepy.page {
       }
     })
     .then(()=>{
+      wepy.redirectTo({
+        url: "/pages/pay_success?orderNo="
+      })
       //TODO:PAY 
     })
     
