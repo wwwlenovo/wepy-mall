@@ -180,22 +180,22 @@
 
   
     async deleteGoods(itemData) {
-      var id = itemData.id;
+      var id = itemData._id;
       let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
       let openId = userSpecialInfo.openid;
-      const json = await api.cartDel({
-        query: {
-          openId: openId,
-          cartIdList: [id],
+      wx.cloud.callFunction({
+      name: 'deleteCartGoods',
+      data:{
+         openId:openId,
+         id:id
         }
-      });
-      if (json.data.code == 0) {
-        // 购物车数据
+      })
+      .then(res => {
         let retList = [];
         for (var i = 0; i < this.list.length; i++) {
-          if (this.list[i].id == id) {
+          if (this.list[i]._id == id) {
             if (this.list[i].isChecked) {
-              this.totalPrice -= parseInt(this.list[i].priceSubtotal);
+              this.totalPrice -= parseInt(this.list[i].totalPrice);
             }
             continue;
           } else {
@@ -203,10 +203,13 @@
           }
         }
         this.list = retList;
-      } else {
-        tip.error(json.data.msg)
-      }
-      this.$apply();
+        this.$apply();
+      })
+      .catch(err => {
+        conole.log(err);
+        tip.error("删除失败");
+      })
+  
     }
 
     async checkAllGoods() {
@@ -285,29 +288,12 @@
         this.updateGoodNum(id, num, skuVal, index, "add");
       },
       toPayOrder() {
-        let purType = 1,
-          prePurType = 1;
-        let bOneType = true;
-        let index = 0;
-        for (var i = 0; i < this.list.length; i++) {
-          if (this.list[i].isChecked) {
-            purType = this.list[i].type;
-            if (index > 0) {
-              if (purType != prePurType) {
-                bOneType = false;
-                break;
-              }
-            }
-            prePurType = purType;
-            index++;
-          }
-        }
-        if (!bOneType) {
-          tip.alert("先把补货的商品结算!");
+        if(this.totalPrice == 0){
+          tip.alert("请选择商品");
           return;
         }
         wepy.navigateTo({
-          url: "/pages/confirm_order?purchasetype=" + purType
+          url: "/pages/confirm_order?from=cart" 
         })
       },
       goIndex() {

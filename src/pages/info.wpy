@@ -19,28 +19,28 @@
       </navigator> -->
       <navigator class="item" url="/pages/order">
         <view class="item_content">
-          <image class="item_img" src="../images/icon_my_02.png"></image>
+          <van-icon name="bars" size="42rpx"/>
           <view class="text">全部订单</view>
         </view>
-        <van-icon name="arrow" size="32rpx"/>
+        <van-icon name="arrow" size="42rpx"/>
       </navigator>
     </view>
     <view class="info_block">
       <navigator class="item" url="/pages/setting">
         <view class="item_content">
-          <image class="item_img" src="../images/icon_my_07.png"></image>
+          <van-icon name="setting" size="42rpx"/>
           <view class="text">设置</view>
         </view>
-        <van-icon name="arrow" size="32rpx"/>
+        <van-icon name="arrow" size="42rpx"/>
       </navigator>
     </view>
     <view class="info_block">
       <navigator class="item" url="/pages/shop_cart">
         <view class="item_content">
-          <image class="item_img" src="../images/icon_my_07.png"></image>
+          <van-icon name="shopping-cart" size="42rpx"/>
           <view class="text">购物车</view>
         </view>
-        <van-icon name="arrow" size="32rpx"/>
+        <van-icon name="arrow" size="42rpx"/>
       </navigator>
     </view>
   </view>
