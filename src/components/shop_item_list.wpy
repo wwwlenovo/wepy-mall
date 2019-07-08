@@ -12,19 +12,6 @@
         <view class="price">￥{{item.price}}</view>
         <view class="goods_num">x{{item.orderNum}}</view>
       </view>
-
-      <view class="order_footer">
-        <view class="btn_group">
-          <view class="btn btn_del" @tap.stop="refund" data-id="{{item.id}}" wx:if="{{item.status==4 && item.refundStatus==0}}">申请退货</view>
-        </view>
-        <view class="order_state" wx:if="{{item.refundStatus==1}}">
-          <view>退货中</view>
-        </view>
-        <view class="order_state" wx:if="{{item.refundStatus==2}}">
-          <view>退款成功</view>
-        </view>
-      </view>
-
     </view>
   </view>
 </repeat>
@@ -52,60 +39,18 @@ export default class ShopItemList extends wepy.component {
     // }
   }
 
-  async applyRefund(itemId) {
-    let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
-    let openId = userSpecialInfo.openid;
 
-    const json = await api.refundApply({
-      query:{
-        openId: openId,
-        orderItemId: itemId
-      }
-    });
-    if (json.data.code==0) {
-      wx.showModal({
-        title: '提示',
-        content: '你的退货申请已提交,等待审批!',
-        showCancel: false,
-        success: function(res) {
-          if (res.confirm) {
-          } else if (res.cancel) {
-          }
-        }
-      })
-    } else {
-      tip.error(json.data.msg);
-    }
-  }
 
   methods = {
     refreshList(val){
       if (val==undefined) return;
-      console.log("val.....",val);
       this.list = val;
       this.$apply();
-    },
-    refund(e) {
-      let itemId = e.currentTarget.dataset.id;
-      let that = this;
-      wx.showModal({
-        title: '提示',
-        content: '确定要退货吗?',
-        success: function(res) {
-          if (res.confirm) {
-            that.applyRefund(itemId);
-          } else if (res.cancel) {
-            console.log('用户点击取消');
-          }
-        }
-      })
     }
   }
 
   onLoad() {
     this.list=[];
-    console.log("加载list============");
-    console.log(this.list)
   }
 }
 

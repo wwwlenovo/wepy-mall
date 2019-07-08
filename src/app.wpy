@@ -31,7 +31,8 @@ export default class extends wepy.app {
       "van-goods-action": "components/vant/goods-action/index",
       "van-goods-action-icon": "components/vant/goods-action-icon/index",
       "van-goods-action-button": "components/vant/goods-action-button/index",
-      "van-icon": "components/vant/icon/index"
+      "van-icon": "components/vant/icon/index",
+      "van-card": "components/vant/card/index"
     },
     window: {
       backgroundTextStyle: 'dark',
