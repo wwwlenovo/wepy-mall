@@ -299,7 +299,7 @@ export default class ComfireOrder extends wepy.page {
     .then(order => {
       let res = order.result;
       this.list = res.data;
-      this.totalPrice = res.totalPrice;
+      this.totalPrice = res.data[0].totalPrice;
       this.actualPrice = this.totalPrice;
       this.operating = false;
       this.$apply();

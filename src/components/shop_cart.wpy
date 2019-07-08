@@ -21,9 +21,9 @@
               </view>
               <view class="goods-price">¥ {{item.price}}</view>
               <view class="buy-num">
-                <view class="jian-btn {{item.orderNum==1? 'disabled' : ''}}" catchtap="jianBtnTap" data-index="{{index}}" data-id="{{item._id}}">-</view>
+                <view class="jian-btn {{item.orderNum==1? 'disabled' : ''}}" catchtap="jianBtnTap" data-index="{{index}}" data-id="{{item.goodsId}}">-</view>
                 <input type="number" value="{{item.orderNum}}" disabled/>
-                <view class="jia-btn {{item.orderNum==1000? 'disabled' : ''}}" catchtap="jiaBtnTap" data-index="{{index}}" data-id="{{item._id}}">+</view>
+                <view class="jia-btn {{item.orderNum==1000? 'disabled' : ''}}" catchtap="jiaBtnTap" data-index="{{index}}" data-id="{{item.goodsId}}">+</view>
               </view>
             </view>
           </view>
@@ -163,12 +163,11 @@
     })
     .then(order => {
       let res = order.result;
-      this.list = res.data;
-      this.list[index].num = num;
-      if(flag == "add"){
-        this.totalPrice = parseInt(this.totalPrice) + parseInt(res.totalPrice);
-      } else if(flag == "sub"){
-        this.totalPrice = parseInt(this.totalPrice) - parseInt(res.totalPrice);
+      this.list[index] = res.data[0];
+      if(flag == "add" && this.list[index].isChecked){
+        this.totalPrice = parseInt(this.totalPrice) + parseInt(res.data[0].price);
+      } else if(flag == "sub" && this.list[index].isChecked){
+        this.totalPrice = parseInt(this.totalPrice) - parseInt(res.data[0].price);
       }
       this.operating = false;
       this.$apply();
@@ -225,8 +224,8 @@
         this.allChecked = !this.allChecked;
         this.totalPrice = 0;
         for (var i = 0; i < this.list.length; i++) {
-          this.list[i].isChecked = !this.allChecked;
-          if (!this.allChecked) {
+          this.list[i].isChecked = this.allChecked;
+          if (this.allChecked) {
             this.totalPrice += parseInt(this.list[i].totalPrice);
           }
         }
@@ -270,7 +269,7 @@
         } else {
           return;
         }
-        this.updateGoodNum(id, num, skuVal, index);
+        this.updateGoodNum(id, num, skuVal, index,"sub");
       },
       jiaBtnTap(e) {
         if (this.operating) {
@@ -283,7 +282,7 @@
         let skuVal = this.list[index].skuVal;
         // 自增
         num++;
-        this.updateGoodNum(id, num, skuVal, index);
+        this.updateGoodNum(id, num, skuVal, index, "add");
       },
       toPayOrder() {
         let purType = 1,

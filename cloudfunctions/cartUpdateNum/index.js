@@ -20,8 +20,11 @@ exports.main = async (event, context) => {
         goodsId: event.goodsId,
         skuVal: event.skuVal
     }).get();
-
-    let totalPrice = order.data[0].price * order.data[0].orderNum;
-    order['totalPrice'] = totalPrice;
+    if(order.data.length!==0){
+        let totalPrice = order.data[0].price * order.data[0].orderNum;
+        order.data[0]['totalPrice'] = totalPrice;
+    }else {
+        order.data[0]['totalPrice'] = 0;
+    }
     return order;
 }

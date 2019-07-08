@@ -22,7 +22,7 @@
           <image class="item_img" src="../images/icon_my_02.png"></image>
           <view class="text">全部订单</view>
         </view>
-        <view class="arrow">&gt;</view>
+        <van-icon name="arrow" size="32rpx"/>
       </navigator>
     </view>
     <view class="info_block">
@@ -31,7 +31,16 @@
           <image class="item_img" src="../images/icon_my_07.png"></image>
           <view class="text">设置</view>
         </view>
-        <view class="arrow">&gt;</view>
+        <van-icon name="arrow" size="32rpx"/>
+      </navigator>
+    </view>
+    <view class="info_block">
+      <navigator class="item" url="/pages/shop_cart">
+        <view class="item_content">
+          <image class="item_img" src="../images/icon_my_07.png"></image>
+          <view class="text">购物车</view>
+        </view>
+        <van-icon name="arrow" size="32rpx"/>
       </navigator>
     </view>
   </view>
