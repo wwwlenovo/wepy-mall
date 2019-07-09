@@ -89,11 +89,10 @@ export default class orderItem extends wepy.component {
       this.flag=1;
       this.orderNo = e.currentTarget.dataset.id;
       await tip.confirm('是否删除订单');
-      console.log(this.flag);
-      this.editOrderInfo(this.orderNo,this.flag);
+      await this.editOrderInfo(this.orderNo,this.flag);
       console.log("删除成功")
-
     },
+    
     async payMoney(e) {
       this.orderNo = e.currentTarget.dataset.id;
       let tradeNo = e.currentTarget.dataset.tradeno;
