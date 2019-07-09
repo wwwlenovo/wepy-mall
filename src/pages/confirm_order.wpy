@@ -243,6 +243,17 @@ export default class ComfireOrder extends wepy.page {
       if(res.result.errMsg == "collection.add:ok"){
         console.log(res.result._id);
       }
+      let cartIds = []; 
+      this.list.forEach(val=>{
+        cartIds.push(val._id);
+      });
+      return wx.cloud.callFunction({
+        name: 'deleteCartGoods',
+        data:{
+         openId:openId,
+         ids:cartIds
+        }
+      });
     })
     .then(()=>{
       wepy.redirectTo({
@@ -360,7 +371,7 @@ export default class ComfireOrder extends wepy.page {
       name: 'deleteCartGoods',
       data:{
          openId:openId,
-         id:id
+         ids:[id]
         }
       })
       .then(res => {

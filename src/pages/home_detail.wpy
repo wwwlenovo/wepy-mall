@@ -146,7 +146,7 @@ page {
 .img_box {
   width: 100%;
   height: 300rpx;
-  background: #000;
+  background: #fff;
 }
 
 .discover_img {
