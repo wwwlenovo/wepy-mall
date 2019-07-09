@@ -20,7 +20,6 @@ import wepy from 'wepy';
 import tip from '@/utils/tip'
 import Discover from '@/components/discover'
 import Bombscreen from '@/components/bomb_screen'
-import BottomLoadMore from "../components/common/bottomLoadMore"
 import Placeholder from "../components/common/placeholder"
 export default class Home extends wepy.page {
   config = {
@@ -28,7 +27,6 @@ export default class Home extends wepy.page {
   }
   components = {
     discover: Discover,
-    bottomLoadMore: BottomLoadMore,
     placeholder: Placeholder,
     bombscreen: Bombscreen
   }

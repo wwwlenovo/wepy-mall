@@ -13,6 +13,7 @@ exports.main = async (event, context) => {
     const category = await categoriesCollection.where({Category_Code:code}).get();
     const res = await productsCollection.where({Category:code}).skip((page - 1) * size).limit(size).get();
     res['total'] = count.total;
+    res['page_total'] = Math.ceil(count.total / size);
     res['category'] = category.data[0];
     return res;
 }

@@ -9,7 +9,7 @@
     <!--矩阵商品列表模块-->
     <shopGridList :purchasetype.sync="purchasetype" :list.sync="list"></shopGridList>
     <!--加载更多时动画-->
-    <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
+    <van-loading wx:if="{{showLoading}}" type="spinner" />
     <!--暂无数据显示-->
     <placeholder :show.sync="is_empty" message="暂无发现数据"></placeholder>
   </view>
@@ -17,7 +17,6 @@
 <script>
 import wepy from 'wepy';
 import ShopGridList from '@/components/shop_grid_list'
-import BottomLoadMore from "../components/common/bottomLoadMore"
 import Placeholder from "../components/common/placeholder"
 import tip from '@/utils/tip'
 
@@ -42,7 +41,6 @@ export default class HomeDetail extends wepy.page {
   }
   components = {
     shopGridList: ShopGridList,
-    bottomLoadMore: BottomLoadMore,
     placeholder: Placeholder
   }
 
@@ -60,7 +58,7 @@ export default class HomeDetail extends wepy.page {
       that.cate = res.result.category;
       wx.setNavigationBarTitle({title: that.cate.Category_Name});
       that.list = [...that.list, ...res.result.data];
-      that.page_total = res.result.total;
+      that.page_total = res.result.page_total;
       if (that.page_total == 0) {
         //暂无数据
         that.is_empty = true;
