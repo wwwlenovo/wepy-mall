@@ -236,24 +236,25 @@ export default class ComfireOrder extends wepy.page {
          openId:openId,
          list:this.list,
          totalPrice: this.totalPrice,
-         status:0
+         status:0,
+         address:this.address
       }
     })
     .then(res =>{
       if(res.result.errMsg == "collection.add:ok"){
         console.log(res.result._id);
+        let cartIds = []; 
+        this.list.forEach(val=>{
+          cartIds.push(val._id);
+        });
+        return wx.cloud.callFunction({
+          name: 'deleteCartGoods',
+          data:{
+            openId:openId,
+            ids:cartIds
+          }
+        });
       }
-      let cartIds = []; 
-      this.list.forEach(val=>{
-        cartIds.push(val._id);
-      });
-      return wx.cloud.callFunction({
-        name: 'deleteCartGoods',
-        data:{
-         openId:openId,
-         ids:cartIds
-        }
-      });
     })
     .then(()=>{
       wepy.redirectTo({
@@ -404,7 +405,6 @@ export default class ComfireOrder extends wepy.page {
     },
     bindKeyInput(e) {
       this.sellerMessage = e.detail.value;
-      console.log("====" + e.detail.value);
     },
     async goPay(e) {
       var fId = e.detail.formId;

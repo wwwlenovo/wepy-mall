@@ -86,9 +86,6 @@ export default class HomeDetail extends wepy.page {
     this.showLoading = true;
     //防止重复加载
     this.preventRepeatReuqest = false;
-    console.log("id==="+this.catCode);
-    //this.list = bb.result.products;
-    //this.$apply();
     this.getGoodList();
   }
   computed = {
@@ -101,7 +98,7 @@ export default class HomeDetail extends wepy.page {
         console.log(res.target)
       }
       return {
-        title: this.cate.name,
+        title: this.cate.Category_Name,
         path: '/pages/home_detail?code='+this.catCode,
         success: function(res) {
           // 转发成功

@@ -13,7 +13,8 @@ exports.main = async (event, context) => {
             openId:event.openId,
             totalPrice: event.totalPrice,
             createTime: new Date(),
-            status:event.status
+            status:event.status,
+            address:event.address
        }
     });
     return co;
