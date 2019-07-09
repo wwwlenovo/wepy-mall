@@ -10,7 +10,7 @@
     <!--发现好商品模块-->
     <discover :list.sync="discoverList"></discover>
     <!--加载更多时动画-->
-    <van-loading wx:if="{{showLoading}}" type="spinner" />
+    <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
     <!--暂无数据显示-->
     <placeholder :show.sync="is_empty" message="暂无发现数据"></placeholder>
   </view>
@@ -20,6 +20,7 @@ import wepy from 'wepy';
 import tip from '@/utils/tip'
 import Discover from '@/components/discover'
 import Bombscreen from '@/components/bomb_screen'
+import BottomLoadMore from "../components/common/bottomLoadMore"
 import Placeholder from "../components/common/placeholder"
 export default class Home extends wepy.page {
   config = {
@@ -27,6 +28,7 @@ export default class Home extends wepy.page {
   }
   components = {
     discover: Discover,
+    bottomLoadMore: BottomLoadMore,
     placeholder: Placeholder,
     bombscreen: Bombscreen
   }

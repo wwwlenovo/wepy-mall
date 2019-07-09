@@ -1,6 +1,6 @@
 <template>
     <view class="loadMoreGif" wx:if="{{show}}">
-        <image src="../../images/loadding.gif" />
+        <van-loading type="spinner" />
         <text>{{message}}</text>
     </view>
 </template>
