@@ -10,7 +10,7 @@
     <!--发现好商品模块-->
     <discover :list.sync="discoverList"></discover>
     <!--加载更多时动画-->
-    <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
+    <van-loading wx:if="{{showLoading}}" type="spinner" />
     <!--暂无数据显示-->
     <placeholder :show.sync="is_empty" message="暂无发现数据"></placeholder>
   </view>
@@ -65,13 +65,13 @@ export default class Home extends wepy.page {
     }).then(result => {
       let res = result.result;
       that.discoverList = [...that.discoverList, ...res.data];
-      that.page_total = res.total;
+      that.page_total = res.page_total;
       if (res.total == 0) {
         //暂无数据
         that.is_empty = true;
       }
-      that.$apply();
       that.showLoading = false;
+      that.$apply();
     });
   }
   async getAdList() {

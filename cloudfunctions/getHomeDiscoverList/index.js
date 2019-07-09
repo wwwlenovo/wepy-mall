@@ -16,5 +16,6 @@ exports.main = async (event, context) => {
     Target_Url:true
   }).get();
   res['total'] = count.total;
+  res['page_total'] = Math.ceil(count.total / size);
   return res;
 }
