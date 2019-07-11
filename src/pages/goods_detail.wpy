@@ -111,7 +111,7 @@ import tip from "@/utils/tip";
 import WxParse from "../plugins/wxParse/wxParse";
 export default class goodsDetail extends wepy.page {
   config = {
-    navigationBarTitleText: "商品详情"
+    navigationBarTitleText: "沏氛"
   };
   data = {
     winWidth: 0,

@@ -93,7 +93,7 @@ export default class HomeDetail extends wepy.page {
         console.log(res.target)
       }
       return {
-        title: this.cate.Category_Name,
+        title: "沏氛",
         path: '/pages/home_detail?code='+this.catCode,
         success: function(res) {
           // 转发成功
