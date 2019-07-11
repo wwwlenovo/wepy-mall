@@ -1,10 +1,5 @@
 <!--发现商品-->
 <template>
-  <view class="item">
-    <view class="img_box">
-      <image class="discover_img" src="{{cate.Category_Logo}}"></image>
-    </view>
-  </view>
   <view class="shop_list">
     <!--矩阵商品列表模块-->
     <shopGridList :purchasetype.sync="purchasetype" :list.sync="list"></shopGridList>

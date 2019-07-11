@@ -9,8 +9,8 @@
         <view class="goods">
           <view class="product_name" wx:if="{{showTitle}}">{{item.Product_Name}}</view>
           <view class="product_info">
-            <view class="price">￥{{item.Original_Price}}</view>
-            <view class="cost_price">￥{{item.Sale_Price}}</view>
+            <view class="price">￥{{item.Sale_Price}}</view>
+            <view class="cost_price">￥{{item.Original_Price}}</view>
             <view class="sale_num">销量{{item.Sale_Count}}件</view>
           </view>
         </view>
