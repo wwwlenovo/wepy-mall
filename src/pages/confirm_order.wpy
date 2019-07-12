@@ -230,6 +230,7 @@ export default class ComfireOrder extends wepy.page {
    // tip.loading("提交订单中");
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
+    let orderId='';
     wx.cloud.callFunction({
     name: 'createOrder',
     data:{
@@ -243,6 +244,7 @@ export default class ComfireOrder extends wepy.page {
     .then(res =>{
       if(res.result.errMsg == "collection.add:ok"){
         console.log(res.result._id);
+        orderId = res.result._id;
         let cartIds = []; 
         this.list.forEach(val=>{
           cartIds.push(val._id);
@@ -257,85 +259,58 @@ export default class ComfireOrder extends wepy.page {
       }
     })
     .then(()=>{
-      wepy.redirectTo({
-        url: "/pages/pay_success?orderNo="
-      })
-      //TODO:PAY 
+      return wx.cloud.callFunction({
+        name: 'pay',
+        data:{
+          type:'unifiedorder',
+          orderId,
+          openid:openId
+        }
+      });
     })
-    
-    // const json = await api.saveByCart({
-    //   query: {
-    //     openId: openId,
-    //     receiverInfoId: this.address.id,
-    //     businessMessage: this.sellerMessage,
-    //     formId: formId,
-    //     reduceScore: this.jf_num
-    //   }
-    // });
-
-    // if (json.data.code == 0) {
-    //   //补货直接提交到后台去审核
-    //   if (this.purchaseType==2) {//补货
-    //     tip.success("已提交补货申请!");
-    //     setTimeout(() => {
-    //       tip.loaded();
-    //       wepy.navigateTo({
-    //         url: "/pages/reorder"
-    //       })
-    //     }, 2000)
-    //     return;
-    //   }
-    //   //保存成功了后进行微信支付
-    //   const pay = await api.toPay({
-    //     query:{
-    //       openId: openId,
-    //       orderNo: json.data.tradeNo
-    //     }
-    //   });
-    //   if (pay.data.code==0) {
-    //     //以下是微信支付
-    //     wx.requestPayment({
-    //       appId: pay.data.appId,
-    //       timeStamp: pay.data.timeStamp,
-    //       nonceStr: pay.data.nonceStr,
-    //       package: pay.data.package,
-    //       signType: 'MD5',
-    //       paySign: pay.data.paySign,
-    //       success: function (res) {
-    //         console.log('pay', res)
-    //         setTimeout(() => {
-    //           //支付成功 关闭loadding 跳转到支付成功页面
-    //           tip.loaded();
-    //           wepy.navigateTo({
-    //             url: "/pages/pay_success?orderNo="+json.data.tradeNo
-    //           })
-    //         }, 2000)
-    //       },
-    //       fail: function (res) {
-    //         tip.alert('支付失败');
-    //         setTimeout(() => {
-    //           //支付成功 关闭loadding 跳转到支付成功页面
-    //           tip.loaded();
-    //           wepy.navigateTo({
-    //             url: "/pages/order"
-    //           })
-    //         }, 2000)
-    //       }
-    //     })
-    //   } else {
-    //     tip.alert('支付失败');
-    //     setTimeout(() => {
-    //       //支付成功 关闭loadding 跳转到支付成功页面
-    //       tip.loaded();
-    //       wepy.navigateTo({
-    //         url: "/pages/order"
-    //       })
-    //     }, 2000)
-    //   }
-    // } else {
-    //   tip.error(json.data.msg)
-    // }
-
+    .then(res => {
+      console.log(res);
+      const param = res.data;
+      if(res.code==0){
+        wx.requestPayment({
+          appId: param.appId,
+          timeStamp: param.time_stamp,
+          nonceStr: param.nonce_str,
+          package: `prepay_id=${param.prepay_id}`,
+          signType: param.sign_type,
+          paySign: param.sign,
+          success: function (res) {
+            console.log('pay', res)
+            setTimeout(() => {
+              //支付成功 关闭loadding 跳转到支付成功页面
+              tip.loaded();
+              wepy.navigateTo({
+                url: "/pages/pay_success?orderNo="+param.out_trade_no
+              })
+            }, 2000)
+          },
+          fail: function (res) {
+            tip.alert('支付失败');
+            setTimeout(() => {
+              //支付成功 关闭loadding 跳转到支付成功页面
+              tip.loaded();
+              wepy.navigateTo({
+                url: "/pages/order"
+              })
+            }, 2000)
+          }
+        })
+      } else {
+        tip.alert('支付失败');
+        setTimeout(() => {
+          //支付成功 关闭loadding 跳转到支付成功页面
+          tip.loaded();
+          wepy.navigateTo({
+            url: "/pages/order"
+          })
+        }, 2000)
+      }
+    });
   }
 
   async updateGoodNum(id, num, skuVal, index) {

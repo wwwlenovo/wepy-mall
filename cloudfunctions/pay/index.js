@@ -15,11 +15,10 @@ const ip = require('ip');
  *
  * @param {obj} event
  * @param {string} event.type 功能类型
- * @param {} userInfo.openId 用户的openid
+ * @param {} event.openid 用户的openid
  */
 exports.main = async function (event) {
-  const { type, data, userInfo } = event;
-  const openid = userInfo.openId;
+  const { type, data, openid } = event;
   cloud.init();
   const db = cloud.database();
 
@@ -31,7 +30,7 @@ exports.main = async function (event) {
     case 'unifiedorder': {
       const order = await orderCollection.where({
         _id:event.orederId,
-        openId:event.openId
+        openId:openid
       }).get();
       if(order.data.length==0){
         return new Res({
@@ -41,7 +40,7 @@ exports.main = async function (event) {
       }
       // 拼凑微信支付统一下单的参数
       const curTime = Date.now();
-      const tradeNo = `${event.orderId}-${curTime}`;
+      const tradeNo = `${event.orderId}`;
       let body = '';
       order.data[0].orderItemList.forEach((value)=>{
         body+=value.goodsName+' 规格： '+value.skuVal;
@@ -70,9 +69,7 @@ exports.main = async function (event) {
           return_code,
           ...restData 
       } = await pay.unifiedOrder(orderParam);
-  
       let order_id = null;
-  
       if (return_code === 'SUCCESS'&& restData.result_code === 'SUCCESS') {
           const {
               prepay_id, 
@@ -102,10 +99,10 @@ exports.main = async function (event) {
           };
   
           let orderUpdate = await orderCollection.where({
-            _id:event.orderId
+            _id:event.orderid
           }).update(orderData);
   
-          order_id = event.orderId;
+          order_id = event.orderid;
       }
   
       return new Res({
