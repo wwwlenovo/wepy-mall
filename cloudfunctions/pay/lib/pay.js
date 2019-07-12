@@ -15,7 +15,7 @@ const wxpay = new WXPay({
   key: KEY,
   timeout: TIMEOUT,
   signType: WXPayConstants.SIGN_TYPE_MD5,
-  useSandbox: false // 不使用沙箱环境
+  useSandbox: true // 不使用沙箱环境
 })
 
 module.exports = wxpay

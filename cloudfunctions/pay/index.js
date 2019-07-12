@@ -20,41 +20,36 @@ const ip = require('ip');
 exports.main = async function (event) {
   const { type, data, userInfo } = event;
   const openid = userInfo.openId;
-
   cloud.init();
   const db = cloud.database();
-  const goodCollection = db.collection('goods');
-  const orderCollection = db.collection('order');
+
+  const orderCollection = db.collection('Order');
 
   // 订单文档的status 0 未支付 1 已支付 2 已关闭
   switch (type) {
     // [在此处放置 unifiedorder 的相关代码]
     case 'unifiedorder': {
-      // 在云函数参数中，提取商品 ID
-      const { goodId } = data;
-  
-      // 查询该商品 ID 是否存在于数据库中，并将数据提取出来
-      let goods = await goodCollection.doc(goodId).get();
-  
-      if (!goods.data.length) {
-          return new Res({
-              code: 1,
-              message: '找不到商品'
-          });
+      const order = await orderCollection.where({
+        _id:event.orederId,
+        openId:event.openId
+      }).get();
+      if(order.data.length==0){
+        return new Res({
+          code: 1,
+          message: '找不到订单'
+        });
       }
-  
-      // 在云函数中提取数据，包括名称、价格才更合理安全，
-      // 因为从端里传过来的商品数据都是不可靠的
-      let good = goods.data[0];
-  
       // 拼凑微信支付统一下单的参数
       const curTime = Date.now();
-      const tradeNo = `${goodId}-${curTime}`;
-      const body = good.name;
+      const tradeNo = `${event.orderId}-${curTime}`;
+      let body = '';
+      order.data[0].orderItemList.forEach((value)=>{
+        body+=value.goodsName+' 规格： '+value.skuVal;
+      });
       const spbill_create_ip = ip.address() || '127.0.0.1';
       // 云函数暂不支付 http 触发器，因此这里回调 notify_url 可以先随便填。
       const notify_url = 'http://www.qq.com'; //'127.0.0.1';
-      const total_fee = good.price;
+      const total_fee = order.data[0].totalPrice;
       const time_stamp = '' + Math.ceil(Date.now() / 1000);
       const out_trade_no = `${tradeNo}`;
       const sign_type = WXPayConstants.SIGN_TYPE_MD5;
@@ -100,16 +95,17 @@ exports.main = async function (event) {
               sign,
               sign_type,
               body,
-              total_fee,
+              totalPrice: total_fee,
               prepay_id,
               sign,
               status: 0, // 订单文档的status 0 未支付 1 已支付 2 已关闭
-              _openid: openid,
           };
   
-          let order = await orderCollection.add(orderData);
+          let orderUpdate = await orderCollection.where({
+            _id:event.orderId
+          }).update(orderData);
   
-          order_id = order.id;
+          order_id = event.orderId;
       }
   
       return new Res({
@@ -150,29 +146,29 @@ exports.main = async function (event) {
   
           // 调用另一个云函数，发送模板消息，通知用户已经支付成功了
           // 如果在实验中拿不到模板消息的模板 id，这段可以暂时去掉
-          let messageResult = await app.callFunction({
-            name: 'wxmessage',
-            data: {
-              formId: prepay_id,
-              openId: userInfo.openId,
-              appId: userInfo.appId,
-              page: `/pages/result/index?id=${out_trade_no}`,
-              data: {
-                keyword1: {
-                  value: out_trade_no // 订单号
-                },
-                keyword2: {
-                  value: body // 物品名称
-                },
-                keyword3: {
-                  value: time// 支付时间
-                },
-                keyword4: {
-                  value: (total_fee / 100) + "元" // 支付金额
-                }
-              }
-            }
-          });
+          // let messageResult = await app.callFunction({
+          //   name: 'wxmessage',
+          //   data: {
+          //     formId: prepay_id,
+          //     openId: userInfo.openId,
+          //     appId: userInfo.appId,
+          //     page: `/pages/result/index?id=${out_trade_no}`,
+          //     data: {
+          //       keyword1: {
+          //         value: out_trade_no // 订单号
+          //       },
+          //       keyword2: {
+          //         value: body // 物品名称
+          //       },
+          //       keyword3: {
+          //         value: time// 支付时间
+          //       },
+          //       keyword4: {
+          //         value: (total_fee / 100) + "元" // 支付金额
+          //       }
+          //     }
+          //   }
+          // });
             
       }
   
