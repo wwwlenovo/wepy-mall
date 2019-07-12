@@ -34,14 +34,7 @@ import {
 } from '@/utils/constant';
 export default class AddressList extends wepy.component {
   props = {
-    addressList: {
-      default: [{
-        style: 0
-      }, {
-        style: 0
-      }],
-      type: Object
-    }
+    addressList: []
   }
   components = {
     swipeDelete: SwipeDelete

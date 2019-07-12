@@ -99,6 +99,7 @@ export default class AddressAdd extends wepy.component {
       name: 'saveAddress',
       data:{
         openId: openId,
+        id:'',
         address: address,
         isDefault: isDefault,
         province:that.province,
@@ -110,11 +111,9 @@ export default class AddressAdd extends wepy.component {
             //0 列表 1新增 2编辑 (显示列表)
       this.$emit('currentPage', 0);
       this.$emit('refreshAddList', 'hehe');
-      that.showLoading = false;
     })
     .catch(err => {
       tip.error("地址添加失败");
-      that.showLoading = false;
     })
     
   }
