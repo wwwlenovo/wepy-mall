@@ -18,7 +18,7 @@ import tip from '@/utils/tip'
 
 export default class HomeDetail extends wepy.page {
   config = {
-    navigationBarTitleText: '',
+    navigationBarTitleText: '沏氛',
   }
   data = {
     catCode: "",
@@ -53,7 +53,7 @@ export default class HomeDetail extends wepy.page {
     }).then(res=>{
       console.log(res)
       that.cate = res.result.category;
-      wx.setNavigationBarTitle({title: that.cate.Category_Name});
+      //wx.setNavigationBarTitle({title: that.cate.Category_Name});
       that.list = [...that.list, ...res.result.data];
       that.page_total = res.result.page_total;
       if (that.page_total == 0) {

@@ -109,8 +109,8 @@ export default class Index extends wepy.page {
 </script>
 <style lang="less">
 .header {
-  background: #f2f0edf0;
-  height: 260rpx;
+  background: white;
+  height: 350rpx;
   width: 100%;
 }
 
