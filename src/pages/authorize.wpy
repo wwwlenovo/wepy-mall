@@ -52,9 +52,21 @@ export default class Authorize extends wepy.page {
         wepy.setStorageSync(USER_INFO, e.detail.userInfo);
         let systemInfo = wepy.getSystemInfoSync();
         wepy.setStorageSync(SYSTEM_INFO, systemInfo);
-        wepy.switchTab({
+        let userInfo =  e.detail.userInfo;
+        wx.cloud.callFunction({
+        name: 'saveUserInfo',
+        data:{
+          userInfo:userInfo,
+          systemInfo:systemInfo,
+          openId:wepy.getStorageSync(USER_SPECICAL_INFO).openid
+        }
+      })
+      .then(res => {
+          console.log(res);        
+          wepy.switchTab({
               url: '/pages/home'
             }) 
+        });
       }
     }
   }
