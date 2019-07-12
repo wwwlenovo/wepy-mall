@@ -281,13 +281,19 @@ export default class ComfireOrder extends wepy.page {
           paySign: param.sign,
           success: function (res) {
             console.log('pay', res)
-            setTimeout(() => {
-              //支付成功 关闭loadding 跳转到支付成功页面
-              tip.loaded();
-              wepy.navigateTo({
-                url: "/pages/pay_success?orderNo="+param.out_trade_no
-              })
-            }, 2000)
+            wx.cloud.callFunction({
+                name: 'pay',
+                data:{
+                  type:'payorder',
+                  orderId
+                }
+            })
+            .then(res => {
+                tip.loaded();
+                wepy.navigateTo({
+                  url: "/pages/pay_success?orderNo="+param.out_trade_no
+                });
+            });
           },
           fail: function (res) {
             tip.alert('支付失败');

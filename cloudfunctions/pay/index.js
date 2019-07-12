@@ -114,12 +114,13 @@ exports.main = async function (event) {
     // [在此处放置 payorder 的相关代码]
     case 'payorder': {
       // 从端里出来相关的订单
-      const {
-          out_trade_no,
-          prepay_id,
-          body,
-          total_fee
-      } = data;
+      // const {
+      //     out_trade_no,
+      //     prepay_id,
+      //     body,
+      //     total_fee
+      // } = data;
+      out_trade_no = event.orderId;
   
       // 到微信支付侧查询是否存在该订单，并查询订单状态，看看是否已经支付成功了。
       const { return_code, ...restData } = await pay.orderQuery({
