@@ -48,7 +48,7 @@ exports.main = async function (event) {
       const spbill_create_ip = ip.address() || '127.0.0.1';
       // 云函数暂不支付 http 触发器，因此这里回调 notify_url 可以先随便填。
       const notify_url = 'http://www.qq.com'; //'127.0.0.1';
-      const total_fee = order.data[0].totalPrice;
+      const total_fee = order.data[0].totalPrice*100;
       const time_stamp = '' + Math.ceil(Date.now() / 1000);
       const out_trade_no = `${tradeNo}`;
       const sign_type = WXPayConstants.SIGN_TYPE_MD5;
@@ -61,6 +61,7 @@ exports.main = async function (event) {
           total_fee,
           openid,
           trade_type: 'JSAPI',
+          timeStamp: time_stamp
       };
   
       // 调用 wx-js-utils 中的统一下单方法
@@ -69,6 +70,7 @@ exports.main = async function (event) {
           ...restData 
       } = await pay.unifiedOrder(orderParam);
       let order_id = null;
+      let frontSign =null;
       if (return_code === 'SUCCESS'&& restData.result_code === 'SUCCESS') {
           const {
               prepay_id, 
@@ -76,7 +78,7 @@ exports.main = async function (event) {
           } = restData;
   
           // 微信小程序支付要单独进地签名，并返回给小程序端
-          const sign = WXPayUtil.generateSignature({
+         frontSign = WXPayUtil.generateSignature({
               appId: mpAppId,
               nonceStr: nonce_str,
               package: `prepay_id=${prepay_id}`,
@@ -88,52 +90,52 @@ exports.main = async function (event) {
               out_trade_no,
               time_stamp,
               nonce_str,
-              sign,
+              frontSign,
               sign_type,
               body,
-              totalPrice: total_fee,
+              totalPrice: total_fee/100,
               prepay_id,
-              sign,
               status: 0, // 订单文档的status 0 未支付 1 已支付 2 已关闭
           };
   
           let orderUpdate = await orderCollection.where({
-            _id:event.orderid
-          }).update(orderData);
+            _id:event.orderId
+          }).update({data:orderData});
   
-          order_id = event.orderid;
+          order_id = event.orderId;
       }
   
       return new Res({
           code: return_code === 'SUCCESS' ? 0 : 1,
-          data: { out_trade_no, time_stamp, order_id, ...restData }
+          data: { out_trade_no, time_stamp, order_id, frontSign, ...restData }
       });
   }
 
     // [在此处放置 payorder 的相关代码]
     case 'payorder': {
       // 从端里出来相关的订单
-      // const {
-      //     out_trade_no,
-      //     prepay_id,
-      //     body,
-      //     total_fee
-      // } = data;
       out_trade_no = event.orderId;
   
       // 到微信支付侧查询是否存在该订单，并查询订单状态，看看是否已经支付成功了。
       const { return_code, ...restData } = await pay.orderQuery({
           out_trade_no
       });
+      const {
+        prepay_id,
+        body,
+        total_fee
+      } = data;
   
       // 若订单存在并支付成功，则开始处理支付
       if (restData.trade_state === 'SUCCESS') {
           let result = await orderCollection
             .where({ out_trade_no })
             .update({
-              status: 1,
-              trade_state: restData.trade_state,
-              trade_state_desc: restData.trade_state_desc
+              data:{
+                status: 1,
+                trade_state: restData.trade_state,
+                trade_state_desc: restData.trade_state_desc
+              }
             });
   
           
@@ -142,31 +144,34 @@ exports.main = async function (event) {
             1}-${curDate.getDate()} ${curDate.getHours()}:${curDate.getMinutes()}:${curDate.getSeconds()}`;
   
           // 调用另一个云函数，发送模板消息，通知用户已经支付成功了
-          // 如果在实验中拿不到模板消息的模板 id，这段可以暂时去掉
-          // let messageResult = await app.callFunction({
-          //   name: 'wxmessage',
-          //   data: {
-          //     formId: prepay_id,
-          //     openId: userInfo.openId,
-          //     appId: userInfo.appId,
-          //     page: `/pages/result/index?id=${out_trade_no}`,
-          //     data: {
-          //       keyword1: {
-          //         value: out_trade_no // 订单号
-          //       },
-          //       keyword2: {
-          //         value: body // 物品名称
-          //       },
-          //       keyword3: {
-          //         value: time// 支付时间
-          //       },
-          //       keyword4: {
-          //         value: (total_fee / 100) + "元" // 支付金额
-          //       }
-          //     }
-          //   }
-          // });
-            
+          if(event.message){
+            let messageResult = await app.callFunction({
+            name: 'wxmessage',
+            data: {
+              formId: prepay_id,
+              openId: openid,
+              appId: mpAppId,
+              page: `/pages/order`,
+              data: {
+                keyword5: {
+                  value: out_trade_no // 订单号
+                },
+                keyword3: {
+                  value: body // 物品名称
+                },
+                keyword1: {
+                  value: time// 支付时间
+                },
+                keyword2: {
+                  value: (total_fee / 100) + "元" // 支付金额
+                },
+                keyword4:{
+                  value:'微信支付'
+                }
+              }
+            }
+          });
+        }           
       }
   
       return new Res({

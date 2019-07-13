@@ -55,12 +55,17 @@ export default class paySuccess extends wepy.page {
         }
       })
       .then(res=>{
-        if(res.code=0){
-          this.totalFee = res.total_fee;
+        console.log(res);
+        if(res.result.code==0){
+          that.totalFee = res.result.data.cash_fee/100;
         }else{
            tip.error("获取支付信息错误")
         }
         that.$apply();
+      })
+      .catch(err=>{
+        tip.error("获取支付信息错误");
+        console.log(err);
       })
   }
   onLoad(option) {

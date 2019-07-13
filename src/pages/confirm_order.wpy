@@ -270,15 +270,15 @@ export default class ComfireOrder extends wepy.page {
     })
     .then(res => {
       console.log(res);
-      const param = res.data;
-      if(res.code==0){
+      const param = res.result.data;
+      if(res.result.code==0){
         wx.requestPayment({
-          appId: param.appId,
+          appId: param.appid,
           timeStamp: param.time_stamp,
           nonceStr: param.nonce_str,
           package: `prepay_id=${param.prepay_id}`,
-          signType: param.sign_type,
-          paySign: param.sign,
+          signType: 'MD5',
+          paySign: param.frontSign,
           success: function (res) {
             console.log('pay', res)
             wx.cloud.callFunction({
@@ -293,9 +293,17 @@ export default class ComfireOrder extends wepy.page {
                 wepy.navigateTo({
                   url: "/pages/pay_success?orderNo="+param.out_trade_no
                 });
+            })
+            .catch(err=>{
+              console.log(err);
+              tip.loaded();
+              wepy.navigateTo({
+                  url: "/pages/pay_success?orderNo="+param.out_trade_no
+              });
             });
           },
           fail: function (res) {
+            console.log(res)
             tip.alert('支付失败');
             setTimeout(() => {
               //支付成功 关闭loadding 跳转到支付成功页面
