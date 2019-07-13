@@ -68,9 +68,8 @@
       </view>
     </view>
     <view class="pay_box">
-      <form report-submit bindsubmit="goPay" >
-        <button form-type="submit" class="button type_green">微信支付</button>
-      </form>
+        <van-button bind:click="goPay" loading="{{paying}}" loading-text="正在支付..."  custom-class="button"	type="primary">微信支付</van-button>
+        <!-- <button form-type="submit" class="button type_green">微信支付</button> -->
     </view>
   </view>
 </template>
@@ -105,7 +104,8 @@ export default class ComfireOrder extends wepy.page {
     totalPrice:0,
     actualPrice : 0,
     purchaseType : 1,
-    operating: false
+    operating: false,
+    paying:false
   }
 
   //获取订单详情
@@ -205,6 +205,7 @@ export default class ComfireOrder extends wepy.page {
     this.operating = false;
     let from = option.from==undefined?"":option.from;
     let useDefault = true;
+    this.paying=false;
     if (from=="selAdd") {
       useDefault = false;
       that.getAddressInfo(wepy.getStorageSync(ADDRESS_ID));
@@ -225,9 +226,10 @@ export default class ComfireOrder extends wepy.page {
 
   }
 
-  async goToPay(formId) {
+  async goToPay() {
     //测试调用接口用，可注释
-   // tip.loading("提交订单中");
+    tip.loading("提交订单中");
+    this.paying = true;
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
     let orderId='';
@@ -290,14 +292,14 @@ export default class ComfireOrder extends wepy.page {
             })
             .then(res => {
                 tip.loaded();
-                wepy.navigateTo({
+                wepy.redirectTo({
                   url: "/pages/pay_success?orderNo="+param.out_trade_no
                 });
             })
             .catch(err=>{
               console.log(err);
               tip.loaded();
-              wepy.navigateTo({
+              wepy.redirectTo({
                   url: "/pages/pay_success?orderNo="+param.out_trade_no
               });
             });
@@ -308,7 +310,7 @@ export default class ComfireOrder extends wepy.page {
             setTimeout(() => {
               //支付成功 关闭loadding 跳转到支付成功页面
               tip.loaded();
-              wepy.navigateTo({
+              wepy.redirectTo({
                 url: "/pages/order"
               })
             }, 2000)
@@ -319,7 +321,7 @@ export default class ComfireOrder extends wepy.page {
         setTimeout(() => {
           //支付成功 关闭loadding 跳转到支付成功页面
           tip.loaded();
-          wepy.navigateTo({
+          wepy.redirectTo({
             url: "/pages/order"
           })
         }, 2000)
@@ -396,7 +398,6 @@ export default class ComfireOrder extends wepy.page {
       this.sellerMessage = e.detail.value;
     },
     async goPay(e) {
-      var fId = e.detail.formId;
       if (!this.is_exit_address) {
         await tip.confirm('你未设置收货地址，请设置地址');
         wepy.navigateTo({
@@ -404,7 +405,7 @@ export default class ComfireOrder extends wepy.page {
         })
         return false;
       }
-      this.goToPay(fId);
+      this.goToPay();
     },
     setAddress() {
       wepy.setStorageSync(CURRENT_GOODS_INFO,{

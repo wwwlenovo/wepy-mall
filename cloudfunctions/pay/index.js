@@ -124,7 +124,7 @@ exports.main = async function (event) {
         prepay_id,
         body,
         total_fee
-      } = data;
+      } = restData;
   
       // 若订单存在并支付成功，则开始处理支付
       if (restData.trade_state === 'SUCCESS') {
@@ -145,7 +145,7 @@ exports.main = async function (event) {
   
           // 调用另一个云函数，发送模板消息，通知用户已经支付成功了
           if(event.message){
-            let messageResult = await app.callFunction({
+            let messageResult = await cloud.callFunction({
             name: 'wxmessage',
             data: {
               formId: prepay_id,
