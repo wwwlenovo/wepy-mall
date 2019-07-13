@@ -2,7 +2,7 @@ const cloud = require('wx-server-sdk');
 const pay = require('./lib/pay');
 const {
   mpAppId,
-  KEY
+  KEY 
 } = require('./config/index');
 const {
   WXPayConstants,
@@ -43,7 +43,7 @@ exports.main = async function (event) {
       const tradeNo = `${event.orderId}`;
       let body = '';
       order.data[0].orderItemList.forEach((value)=>{
-        body+=value.goodsName+' 规格： '+value.skuVal;
+        body+=value.goodsName+'--规格:'+value.skuVal;
       });
       const spbill_create_ip = ip.address() || '127.0.0.1';
       // 云函数暂不支付 http 触发器，因此这里回调 notify_url 可以先随便填。
@@ -61,7 +61,6 @@ exports.main = async function (event) {
           total_fee,
           openid,
           trade_type: 'JSAPI',
-          timeStamp: time_stamp,
       };
   
       // 调用 wx-js-utils 中的统一下单方法
