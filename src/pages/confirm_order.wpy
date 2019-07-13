@@ -372,7 +372,7 @@ export default class ComfireOrder extends wepy.page {
           if (this.list[i]._id == id) {
             if (this.list[i].isChecked) {
               console.log(this.list)
-              this.totalPrice -= parseInt(this.list[i].totalPrice);
+              this.totalPrice = parseFloat(this.totalPrice - this.list[i].totalPrice);
             }
             continue;
           } else {

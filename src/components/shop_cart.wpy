@@ -32,7 +32,8 @@
       </view>
     </repeat>
   </view>
-  <view class="empty_cart" wx:if="{{list.length==0}}">
+  <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
+  <view class="empty_cart" wx:if="{{list.length==0&&!showLoading}}">
     <image src="../images/empty_cart.png" class="empty_cart_img"></image>
     <view class="empty_cart_text">购物车还是空的</view>
     <view class="shop_btn">
@@ -59,10 +60,12 @@
   import {
     USER_SPECICAL_INFO
   } from '@/utils/constant';
-  import swipeDelete from './common/wepy-swipe-delete'
+  import swipeDelete from './common/wepy-swipe-delete';
+  import bottomLoadMore from "../components/common/bottomLoadMore";
   export default class shopCart extends wepy.component {
     components = {
-      swipeDelete
+      swipeDelete,
+      bottomLoadMore,
     }
     data = {
       list: [],
@@ -70,11 +73,13 @@
       saveHidden: true,
       totalPrice: 0,
       operating: false,
-      allChecked: true
+      allChecked: true,
+      showLoading:false
     }
     //获取购物车商品列表
     async getCartList() {
       let that = this;
+      this.showLoading = true;
       let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
       let openId = userSpecialInfo.openid;
       wx.cloud.callFunction({
@@ -89,7 +94,7 @@
         this.totalPrice = 0;
         this.list.forEach(value=>{
           if(value.isChecked){
-            this.totalPrice += value.totalPrice
+            this.totalPrice = parseFloat(this.totalPrice + value.totalPrice);
           }
         });
         if(this.list.every(value => {
@@ -99,10 +104,13 @@
         }else {
           this.allChecked = false;
         }
+        this.showLoading = false;
         this.$apply();
       })
       .catch(err => {
         console.log(err);
+        this.showLoading = false;
+        this.$apply();
         tip.error("获取商品列表错误");
       })
     }
@@ -129,9 +137,9 @@
         if(res.result.stats.updated !== 0){
           this.list[index].isChecked = !isChecked;
           if (this.list[index].isChecked) {
-            this.totalPrice += parseInt(this.list[index].totalPrice);
+            this.totalPrice = parseFloat(this.totalPrice + this.list[index].totalPrice);
           } else {
-            this.totalPrice -= parseInt(this.list[index].totalPrice);
+            this.totalPrice = parseFloat(this.totalPrice - this.list[index].totalPrice);
           }
         }
         if(this.list.every(value => {
@@ -165,9 +173,9 @@
       let res = order.result;
       this.list[index] = res.data[0];
       if(flag == "add" && this.list[index].isChecked){
-        this.totalPrice = parseInt(this.totalPrice) + parseInt(res.data[0].price);
+        this.totalPrice = parseFloat(this.totalPrice + res.data[0].price);
       } else if(flag == "sub" && this.list[index].isChecked){
-        this.totalPrice = parseInt(this.totalPrice) - parseInt(res.data[0].price);
+        this.totalPrice = parseFloat(this.totalPrice - res.data[0].price);
       }
       this.operating = false;
       this.$apply();
@@ -195,7 +203,7 @@
         for (var i = 0; i < this.list.length; i++) {
           if (this.list[i]._id == id) {
             if (this.list[i].isChecked) {
-              this.totalPrice -= parseInt(this.list[i].totalPrice);
+              this.totalPrice = parseFloat(this.totalPrice - this.list[i].totalPrice);
             }
             continue;
           } else {
@@ -229,7 +237,7 @@
         for (var i = 0; i < this.list.length; i++) {
           this.list[i].isChecked = this.allChecked;
           if (this.allChecked) {
-            this.totalPrice += parseInt(this.list[i].totalPrice);
+            this.totalPrice = parseFloat(this.totalPrice + this.list[i].totalPrice);
           }
         }
         this.$apply();
