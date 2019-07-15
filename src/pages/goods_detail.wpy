@@ -4,7 +4,7 @@
     <!--index.wxml-->
     <swiper
       indicator-dots="true"
-      autoplay="true"
+      autoplay="false"
       interval="5000"
       duration="500"
       indicator-active-color="#ffc452"
@@ -13,12 +13,18 @@
     >
       <block wx:for="{{detail.Cover_Pics}}" key="item" item="item" wx:key="key">
         <swiper-item>
-          <image
+          <image wx:if="{{item.photo}}"
             src="{{item.photo}}"
             data-src="{{item.photo}}"
             class="slide-image"
             @tap="previewImage"
           />
+          <video wx:if="{{item.video}}"
+            src="{{item.video}}"
+            data-src="{{item.video}}"
+            class="slide-image"
+            autoplay = "{{true}}"
+            ></video>
         </swiper-item>
       </block>
     </swiper>
