@@ -29,7 +29,7 @@
     <view >
       <view class="btn_group">
         <van-button plain type="danger"  wx:if="{{item.status==0}}" data-id="{{item._id}}"  bind:click="delOrder" custom-class="btn btn_del">删除订单</van-button>
-        <van-button plain type="primary"  wx:if="{{item.status==0}}" data-id="{{item._id}}"  bind:click="payMoney" loading="{{paying}}" loading-text="正在支付..." custom-class="btn btn_pay">立即付款</van-button>
+        <van-button plain type="primary"  wx:if="{{item.status==0}}" data-id="{{item._id}}"  bind:click="payMoney" loading="{{paying}}" custom-class="btn btn_pay">立即付款</van-button>
     </view>
   </view>
   </view>
