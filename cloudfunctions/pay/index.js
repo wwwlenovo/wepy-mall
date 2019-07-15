@@ -29,7 +29,7 @@ exports.main = async function (event) {
     // [在此处放置 unifiedorder 的相关代码]
     case 'unifiedorder': {
       const order = await orderCollection.where({
-        _id:event.orederId,
+        _id:event.orderId,
         openId:openid
       }).get();
       if(order.data.length==0){
