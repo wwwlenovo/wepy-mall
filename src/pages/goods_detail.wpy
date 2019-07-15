@@ -184,6 +184,10 @@ export default class goodsDetail extends wepy.page {
       .then(res => {
         console.log(res);
         that.detail = res.result.data[0];
+        that.detail.Goods_Sku_Name_List[0].Sku_Value_List.forEach((value,index,elem)=>{
+          elem[index].Current == false;
+        });
+        that.detail.Goods_Sku_Name_List[0].Sku_Value_List[0].Current = true;
         that.detail["goodsSkuVal"] =
           that.detail.Goods_Sku_Name_List[0].Sku_Value_List[0].Sku_Val;
         that.detail["skuValPrice"] =
