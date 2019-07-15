@@ -329,7 +329,7 @@ export default class ComfireOrder extends wepy.page {
     });
   }
 
-  async updateGoodNum(id, num, skuVal, index) {
+  async updateGoodNum(id, num, skuVal, index, flag) {
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
     wx.cloud.callFunction({
@@ -343,9 +343,12 @@ export default class ComfireOrder extends wepy.page {
     })
     .then(order => {
       let res = order.result;
-      this.list = res.data;
-      this.totalPrice = res.data[0].totalPrice;
-      this.actualPrice = this.totalPrice;
+      this.list[index] = res.data[0];
+      if(flag == "add" && this.list[index].isChecked){
+        this.totalPrice = parseFloat(this.totalPrice + res.data[0].price);
+      } else if(flag == "sub" && this.list[index].isChecked){
+        this.totalPrice = parseFloat(this.totalPrice - res.data[0].price);
+      }
       this.operating = false;
       this.$apply();
     })
@@ -431,7 +434,7 @@ export default class ComfireOrder extends wepy.page {
         return;
       }
   
-      this.updateGoodNum(id, num, skuVal, index);
+      this.updateGoodNum(id, num, skuVal, index,"sub");
     },
     jiaBtnTap(e) {
       if (this.operating) {
@@ -445,7 +448,7 @@ export default class ComfireOrder extends wepy.page {
       let skuVal = this.list[index].skuVal;
       // 自增
       num ++;
-      this.updateGoodNum(id, num, skuVal, index);
+      this.updateGoodNum(id, num, skuVal, index,"add");
     }
   }
   events = {
