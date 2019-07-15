@@ -4,7 +4,7 @@
     <!--index.wxml-->
     <swiper
       indicator-dots="true"
-      autoplay="false"
+      autoplay="{{false}}"
       interval="5000"
       duration="500"
       indicator-active-color="#ffc452"
@@ -21,9 +21,9 @@
           />
           <video wx:if="{{item.video}}"
             src="{{item.video}}"
-            data-src="{{item.video}}"
             class="slide-image"
-            autoplay = "{{true}}"
+            autoplay = "{{false}}"
+            poster="{{detail.logo}}"
             ></video>
         </swiper-item>
       </block>
