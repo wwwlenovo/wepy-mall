@@ -1,5 +1,5 @@
 {
-	"description": "tea-mall",
+	"description": "Hengjie-mall",
 	"setting": {
 		"urlCheck": false,
 		"es6": false,
@@ -12,7 +12,7 @@
 	},
 	"compileType": "miniprogram",
 	"appid": "wx1758aaedecbb1d0f",
-	"projectname": "wepy-tea-mall",
+	"projectname": "wepy-Hengjie-mall",
 	"miniprogramRoot": "dist/",
 	"cloudfunctionRoot": "cloudfunctions/",
 	"simulatorType": "wechat",

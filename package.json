@@ -1,7 +1,7 @@
 {
-  "name": "tea-mall",
+  "name": "hengjie-mall",
   "version": "1.0.0",
-  "description": "tea mall project",
+  "description": "Hengjie mall project",
   "main": "dist/app.js",
   "scripts": {
     "dev": "wepy build --watch",
