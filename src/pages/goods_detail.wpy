@@ -117,7 +117,7 @@ import tip from "@/utils/tip";
 import WxParse from "../plugins/wxParse/wxParse";
 export default class goodsDetail extends wepy.page {
   config = {
-    navigationBarTitleText: "沏氛"
+    navigationBarTitleText: "恒洁卫浴"
   };
   data = {
     winWidth: 0,
@@ -378,7 +378,7 @@ export default class goodsDetail extends wepy.page {
         console.log(res.target);
       }
       return {
-        title: `【沏氛】好茶一起分享`,
+        title: `【恒洁卫浴】`,
         path: "/pages/goods_detail?id=" + this.goodsId,
         success: function(res) {
           // 转发成功

@@ -24,7 +24,7 @@ import BottomLoadMore from "../components/common/bottomLoadMore"
 import Placeholder from "../components/common/placeholder"
 export default class Home extends wepy.page {
   config = {
-    navigationBarTitleText: '沏氛',
+    navigationBarTitleText: '恒洁卫浴',
   }
   components = {
     discover: Discover,
@@ -106,7 +106,7 @@ export default class Home extends wepy.page {
         console.log(res.target)
       }
       return {
-        title: `沏氛`,
+        title: `恒洁卫浴`,
         path: '/pages/home',
         success: function(res) {
           // 转发成功
