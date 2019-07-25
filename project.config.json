@@ -11,7 +11,7 @@
 		"checkInvalidKey": true
 	},
 	"compileType": "miniprogram",
-	"appid": "wx238b86598e710fc2",
+	"appid": "wx1758aaedecbb1d0f",
 	"projectname": "wepy-tea-mall",
 	"miniprogramRoot": "dist/",
 	"cloudfunctionRoot": "cloudfunctions/",
