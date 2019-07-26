@@ -1,0 +1,50 @@
+<template>
+<view>
+
+</view>
+</template>
+<script>
+import wepy from 'wepy';
+import tip from '@/utils/tip';
+import {
+  USER_SPECICAL_INFO
+} from '@/utils/constant';
+export default class Address extends wepy.page {
+  config = {
+    navigationBarTitleText: '商家入驻',
+  }
+
+  data = {
+
+  }
+
+  components = {
+
+  }
+
+  onLoad(option) {
+
+  }
+
+  onShow(){
+
+  }
+  computed = {
+
+  }
+  methods = {
+
+  }
+  onUnload() {
+   
+  }
+  events = {
+
+  }
+
+}
+
+</script>
+<style lang="less">
+
+</style>

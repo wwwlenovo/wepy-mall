@@ -43,7 +43,17 @@
         <van-icon name="arrow" size="42rpx"/>
       </navigator>
     </view>
+    <view class="info_block">
+      <navigator class="item" url="/pages/shop_cart">
+        <view class="item_content">
+          <van-icon name="manager" size="42rpx"/>
+          <view class="text">商家入驻</view>
+        </view>
+        <van-icon name="arrow" size="42rpx"/>
+      </navigator>
+    </view>
   </view>
+
 </template>
 <script>
 import wepy from 'wepy';
