@@ -1,14 +1,10 @@
 <template>
     <view class="bc">
-        <!--<view class="discover">
-            <view class="discover_title_doc">发现好商品</view>
-        </view>-->
         <view class="discover_list">
-            <navigator class="item" open-type="navigate" wx:for="{{list}}" wx:key="item" url="{{item.Target_Url}}">
+            <navigator class="item" open-type="navigate" wx:for="{{list}}" wx:key="item" url="{{item.Target_Url}}" wx:if="{{item.Category_Logo}}">
                 <image class="discover_img" src="{{item.Category_Logo}}"></image>
+            </navigator>
         </view>
-        </navigator>
-    </view>
     </view>
 </template>
 <script>
@@ -24,11 +20,6 @@ export default class Discover extends wepy.component {
 
     }
     onLoad() {
-        let that = this;
-        console.log(this.list)
-    }
-    getList() {
-        console.log("调用getList方法6666666")
     }
     computed = {
 

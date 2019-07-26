@@ -7,6 +7,7 @@
         </swiper-item>
       </block>
     </swiper>
+    <video wx:for="{{videos}}" wx:key="item" src="{{item.video}}" class="home-video" autoplay="{{true}}"></video>
     <!--发现好商品模块-->
     <discover :list.sync="discoverList"></discover>
     <!--加载更多时动画-->
@@ -39,6 +40,7 @@ export default class Home extends wepy.page {
     duration: 1000,
     indicatorActiveColor: "#fff",
     discoverList: [],
+    videos:[],
     //是否有数据
     is_empty: false,
     //当前页面
@@ -74,6 +76,10 @@ export default class Home extends wepy.page {
       that.$apply();
     });
   }
+  async getHomeVideo(){
+    const db = wx.cloud.database();
+    db.collection('HomeVideo').get().then(res => {this.videos = res.data;this.$apply();});
+  }
   async getAdList() {
     let that = this;
     wx.cloud.callFunction({
@@ -86,6 +92,7 @@ export default class Home extends wepy.page {
   onLoad() {
     let that = this;
     this.discoverList = [];
+    this.getHomeVideo();
     that.getDiscoverList();
     this.getAdList();
   }
@@ -149,6 +156,12 @@ export default class Home extends wepy.page {
 <style lang="less">
 .swiper {
   height: 1280rpx;
+  margin-bottom: 14rpx;
+}
+
+.home-video {
+  height: 600rpx;
+  width: 100%;
 }
 
 .slide-image {
