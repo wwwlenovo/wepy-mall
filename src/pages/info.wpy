@@ -44,7 +44,7 @@
       </navigator>
     </view>
     <view class="info_block">
-      <navigator class="item" url="/pages/shop_cart">
+      <navigator class="item" url="/pages/business_sign_up">
         <view class="item_content">
           <van-icon name="manager" size="42rpx"/>
           <view class="text">商家入驻</view>

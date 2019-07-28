@@ -32,7 +32,12 @@ export default class extends wepy.app {
       "van-icon": "components/vant/icon/index",
       "van-transition": "components/vant/transition/index",
       "van-popup": "components/vant/popup/index",
-      "van-loading": "components/vant/loading/index"
+      "van-loading": "components/vant/loading/index",
+      "van-cell": "components/vant/cell/index",
+      "van-cell-group": "components/vant/cell-group/index",
+      "van-field": "components/vant/field/index",
+      "van-row": "components/vant/row/index",
+      "van-col": "components/vant/col/index"
     },
     window: {
       backgroundTextStyle: 'dark',
