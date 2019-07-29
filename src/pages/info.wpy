@@ -52,7 +52,7 @@ import {
 } from '@/utils/constant';
 export default class Index extends wepy.page {
   config = {
-    navigationBarTitleText: '我',
+    navigationBarTitleText: '沏氛',
   }
   components = {
 
@@ -109,8 +109,8 @@ export default class Index extends wepy.page {
 </script>
 <style lang="less">
 .header {
-  background: #f2f0edf0;
-  height: 260rpx;
+  background: white;
+  height: 350rpx;
   width: 100%;
 }
 

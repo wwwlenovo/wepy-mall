@@ -11,13 +11,13 @@
 		"checkInvalidKey": true
 	},
 	"compileType": "miniprogram",
-	"appid": "wx1758aaedecbb1d0f",
+	"appid": "wx238b86598e710fc2",
 	"projectname": "wepy-tea-mall",
 	"miniprogramRoot": "dist/",
 	"cloudfunctionRoot": "cloudfunctions/",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
 	"cloudfunctionTemplateRoot": "cloudfunctionTemplate",
-	"libVersion": "2.7.3",
+	"libVersion": "2.7.4",
 	"condition": {}
 }

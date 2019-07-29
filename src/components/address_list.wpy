@@ -6,11 +6,11 @@
           <view class="address_list" @tap="tapSelAddress" data-id="{{item._id}}">
             <view class="title">
               <view class="user_info">
-                <text class="name">{{item.address.receiverName}}</text>
+                <text class="name">{{item.address.receiverName+'  '}}</text>
                 <text class="phone">{{item.address.mobile}}</text>
               </view>
               <view class="active_address">
-                <text class="defult" wx:if="{{item.isDefault==1}}"> [默认]</text>
+                <text class="defult" wx:if="{{item.isDefault==1}}">[默认]</text>
                 {{item.province.name}} {{item.city.name}} {{item.area.name}} {{item.adress.addressDetail}}
               </view>
             </view>
@@ -34,14 +34,7 @@ import {
 } from '@/utils/constant';
 export default class AddressList extends wepy.component {
   props = {
-    addressList: {
-      default: [{
-        style: 0
-      }, {
-        style: 0
-      }],
-      type: Object
-    }
+    addressList: []
   }
   components = {
     swipeDelete: SwipeDelete

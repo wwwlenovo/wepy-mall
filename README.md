@@ -1,2 +1,1 @@
-# wepy-Hengjie-mall
-Hengjie mall
+# wepy-mall

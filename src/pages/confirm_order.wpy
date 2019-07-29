@@ -68,9 +68,8 @@
       </view>
     </view>
     <view class="pay_box">
-      <form report-submit bindsubmit="goPay" >
-        <button form-type="submit" class="button type_green">微信支付</button>
-      </form>
+        <van-button bind:click="goPay" loading="{{paying}}" loading-text="正在支付..."  custom-class="button"	type="primary">微信支付</van-button>
+        <!-- <button form-type="submit" class="button type_green">微信支付</button> -->
     </view>
   </view>
 </template>
@@ -105,7 +104,8 @@ export default class ComfireOrder extends wepy.page {
     totalPrice:0,
     actualPrice : 0,
     purchaseType : 1,
-    operating: false
+    operating: false,
+    paying:false
   }
 
   //获取订单详情
@@ -205,6 +205,7 @@ export default class ComfireOrder extends wepy.page {
     this.operating = false;
     let from = option.from==undefined?"":option.from;
     let useDefault = true;
+    this.paying=false;
     if (from=="selAdd") {
       useDefault = false;
       that.getAddressInfo(wepy.getStorageSync(ADDRESS_ID));
@@ -225,11 +226,13 @@ export default class ComfireOrder extends wepy.page {
 
   }
 
-  async goToPay(formId) {
+  async goToPay() {
     //测试调用接口用，可注释
-   // tip.loading("提交订单中");
+    tip.loading("提交订单中");
+    this.paying = true;
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
+    let orderId='';
     wx.cloud.callFunction({
     name: 'createOrder',
     data:{
@@ -243,6 +246,7 @@ export default class ComfireOrder extends wepy.page {
     .then(res =>{
       if(res.result.errMsg == "collection.add:ok"){
         console.log(res.result._id);
+        orderId = res.result._id;
         let cartIds = []; 
         this.list.forEach(val=>{
           cartIds.push(val._id);
@@ -257,88 +261,75 @@ export default class ComfireOrder extends wepy.page {
       }
     })
     .then(()=>{
-      wepy.redirectTo({
-        url: "/pages/pay_success?orderNo="
-      })
-      //TODO:PAY 
+      return wx.cloud.callFunction({
+        name: 'pay',
+        data:{
+          type:'unifiedorder',
+          orderId,
+          openid:openId
+        }
+      });
     })
-    
-    // const json = await api.saveByCart({
-    //   query: {
-    //     openId: openId,
-    //     receiverInfoId: this.address.id,
-    //     businessMessage: this.sellerMessage,
-    //     formId: formId,
-    //     reduceScore: this.jf_num
-    //   }
-    // });
-
-    // if (json.data.code == 0) {
-    //   //补货直接提交到后台去审核
-    //   if (this.purchaseType==2) {//补货
-    //     tip.success("已提交补货申请!");
-    //     setTimeout(() => {
-    //       tip.loaded();
-    //       wepy.navigateTo({
-    //         url: "/pages/reorder"
-    //       })
-    //     }, 2000)
-    //     return;
-    //   }
-    //   //保存成功了后进行微信支付
-    //   const pay = await api.toPay({
-    //     query:{
-    //       openId: openId,
-    //       orderNo: json.data.tradeNo
-    //     }
-    //   });
-    //   if (pay.data.code==0) {
-    //     //以下是微信支付
-    //     wx.requestPayment({
-    //       appId: pay.data.appId,
-    //       timeStamp: pay.data.timeStamp,
-    //       nonceStr: pay.data.nonceStr,
-    //       package: pay.data.package,
-    //       signType: 'MD5',
-    //       paySign: pay.data.paySign,
-    //       success: function (res) {
-    //         console.log('pay', res)
-    //         setTimeout(() => {
-    //           //支付成功 关闭loadding 跳转到支付成功页面
-    //           tip.loaded();
-    //           wepy.navigateTo({
-    //             url: "/pages/pay_success?orderNo="+json.data.tradeNo
-    //           })
-    //         }, 2000)
-    //       },
-    //       fail: function (res) {
-    //         tip.alert('支付失败');
-    //         setTimeout(() => {
-    //           //支付成功 关闭loadding 跳转到支付成功页面
-    //           tip.loaded();
-    //           wepy.navigateTo({
-    //             url: "/pages/order"
-    //           })
-    //         }, 2000)
-    //       }
-    //     })
-    //   } else {
-    //     tip.alert('支付失败');
-    //     setTimeout(() => {
-    //       //支付成功 关闭loadding 跳转到支付成功页面
-    //       tip.loaded();
-    //       wepy.navigateTo({
-    //         url: "/pages/order"
-    //       })
-    //     }, 2000)
-    //   }
-    // } else {
-    //   tip.error(json.data.msg)
-    // }
-
+    .then(res => {
+      console.log(res);
+      const param = res.result.data;
+      if(res.result.code==0){
+        wx.requestPayment({
+          appId: param.appid,
+          timeStamp: param.time_stamp,
+          nonceStr: param.nonce_str,
+          package: `prepay_id=${param.prepay_id}`,
+          signType: 'MD5',
+          paySign: param.frontSign,
+          success: function (res) {
+            console.log('pay', res)
+            wx.cloud.callFunction({
+                name: 'pay',
+                data:{
+                  type:'payorder',
+                  orderId
+                }
+            })
+            .then(res => {
+                tip.loaded();
+                wepy.redirectTo({
+                  url: "/pages/pay_success?orderNo="+param.out_trade_no
+                });
+            })
+            .catch(err=>{
+              console.log(err);
+              tip.loaded();
+              wepy.redirectTo({
+                  url: "/pages/pay_success?orderNo="+param.out_trade_no
+              });
+            });
+          },
+          fail: function (res) {
+            console.log(res)
+            tip.alert('支付失败');
+            setTimeout(() => {
+              //支付成功 关闭loadding 跳转到支付成功页面
+              tip.loaded();
+              wepy.redirectTo({
+                url: "/pages/order"
+              })
+            }, 2000)
+          }
+        })
+      } else {
+        tip.alert('支付失败');
+        setTimeout(() => {
+          //支付成功 关闭loadding 跳转到支付成功页面
+          tip.loaded();
+          wepy.redirectTo({
+            url: "/pages/order"
+          })
+        }, 2000)
+      }
+    });
   }
 
-  async updateGoodNum(id, num, skuVal, index) {
+  async updateGoodNum(id, num, skuVal, index, flag) {
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
     wx.cloud.callFunction({
@@ -352,9 +343,12 @@ export default class ComfireOrder extends wepy.page {
     })
     .then(order => {
       let res = order.result;
-      this.list = res.data;
-      this.totalPrice = res.data[0].totalPrice;
-      this.actualPrice = this.totalPrice;
+      this.list[index] = res.data[0];
+      if(flag == "add" && this.list[index].isChecked){
+        this.totalPrice = parseFloat(this.totalPrice + res.data[0].price);
+      } else if(flag == "sub" && this.list[index].isChecked){
+        this.totalPrice = parseFloat(this.totalPrice - res.data[0].price);
+      }
       this.operating = false;
       this.$apply();
     })
@@ -381,7 +375,7 @@ export default class ComfireOrder extends wepy.page {
           if (this.list[i]._id == id) {
             if (this.list[i].isChecked) {
               console.log(this.list)
-              this.totalPrice -= parseInt(this.list[i].totalPrice);
+              this.totalPrice = parseFloat(this.totalPrice - this.list[i].totalPrice);
             }
             continue;
           } else {
@@ -407,7 +401,6 @@ export default class ComfireOrder extends wepy.page {
       this.sellerMessage = e.detail.value;
     },
     async goPay(e) {
-      var fId = e.detail.formId;
       if (!this.is_exit_address) {
         await tip.confirm('你未设置收货地址，请设置地址');
         wepy.navigateTo({
@@ -415,7 +408,7 @@ export default class ComfireOrder extends wepy.page {
         })
         return false;
       }
-      this.goToPay(fId);
+      this.goToPay();
     },
     setAddress() {
       wepy.setStorageSync(CURRENT_GOODS_INFO,{
@@ -441,7 +434,7 @@ export default class ComfireOrder extends wepy.page {
         return;
       }
   
-      this.updateGoodNum(id, num, skuVal, index);
+      this.updateGoodNum(id, num, skuVal, index,"sub");
     },
     jiaBtnTap(e) {
       if (this.operating) {
@@ -455,7 +448,7 @@ export default class ComfireOrder extends wepy.page {
       let skuVal = this.list[index].skuVal;
       // 自增
       num ++;
-      this.updateGoodNum(id, num, skuVal, index);
+      this.updateGoodNum(id, num, skuVal, index,"add");
     }
   }
   events = {

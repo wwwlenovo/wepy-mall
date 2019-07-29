@@ -68,7 +68,7 @@ export default class Discover extends wepy.component {
 .discover_list {
     .discover_img {
         width: 100%;
-        height: 300rpx;
+        height: 200rpx;
     }
     .info {
         padding: 5rpx;

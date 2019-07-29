@@ -47,18 +47,26 @@ export default class paySuccess extends wepy.page {
   }
   async getPayOrderDetail() {
     let that = this;
-    // const json = await api.getPayOrderDetail({
-    //   query: {
-    //     tradeNo: this.orderNo
-    //   }
-    // });
-    // if (json.data.code == 0) {
-       this.totalFee = 100;
-    // } else {
-    //   tip.error(json.data.msg)
-    // }
-
-    that.$apply();
+     wx.cloud.callFunction({
+        name: 'pay',
+        data:{
+          type:'payorder',
+          orderId:this.orderNo
+        }
+      })
+      .then(res=>{
+        console.log(res);
+        if(res.result.code==0){
+          that.totalFee = res.result.data.cash_fee/100;
+        }else{
+           tip.error("获取支付信息错误")
+        }
+        that.$apply();
+      })
+      .catch(err=>{
+        tip.error("获取支付信息错误");
+        console.log(err);
+      })
   }
   onLoad(option) {
     //tip.success('支付成功,接收的参数为' + option.orderNo);

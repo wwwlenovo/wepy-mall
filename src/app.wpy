@@ -34,10 +34,10 @@ export default class extends wepy.app {
     },
     window: {
       backgroundTextStyle: 'dark',
-      navigationBarBackgroundColor: '#FFFFFF',
-      navigationBarTitleText: 'WeChat',
+      navigationBarBackgroundColor: 'white',
+      navigationBarTitleText: '沏氛',
       navigationBarTextStyle: 'black',
-      enablePullDownRefresh: false,
+      enablePullDownRefresh: true,
       backgroundColor: '#EFEFEF'
 
     },
@@ -53,7 +53,7 @@ export default class extends wepy.app {
         "selectedIconPath": "images/icon_home_active.png"
       }, {
         "pagePath": "pages/info",
-        "text": "我",
+        "text": "我的",
         "iconPath": "images/icon_info.png",
         "selectedIconPath": "images/icon_info_active.png"
       }]

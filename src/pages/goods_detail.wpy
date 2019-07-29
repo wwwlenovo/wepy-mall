@@ -4,7 +4,7 @@
     <!--index.wxml-->
     <swiper
       indicator-dots="true"
-      autoplay="true"
+      autoplay="{{false}}"
       interval="5000"
       duration="500"
       indicator-active-color="#ffc452"
@@ -13,12 +13,18 @@
     >
       <block wx:for="{{detail.Cover_Pics}}" key="item" item="item" wx:key="key">
         <swiper-item>
-          <image
+          <image wx:if="{{item.photo}}"
             src="{{item.photo}}"
             data-src="{{item.photo}}"
             class="slide-image"
             @tap="previewImage"
           />
+          <video wx:if="{{item.video}}"
+            src="{{item.video}}"
+            class="slide-image"
+            autoplay = "{{false}}"
+            poster="{{detail.logo}}"
+            ></video>
         </swiper-item>
       </block>
     </swiper>
@@ -111,7 +117,7 @@ import tip from "@/utils/tip";
 import WxParse from "../plugins/wxParse/wxParse";
 export default class goodsDetail extends wepy.page {
   config = {
-    navigationBarTitleText: "商品详情"
+    navigationBarTitleText: "沏氛"
   };
   data = {
     winWidth: 0,
@@ -178,6 +184,10 @@ export default class goodsDetail extends wepy.page {
       .then(res => {
         console.log(res);
         that.detail = res.result.data[0];
+        that.detail.Goods_Sku_Name_List[0].Sku_Value_List.forEach((value,index,elem)=>{
+          elem[index].Current == false;
+        });
+        that.detail.Goods_Sku_Name_List[0].Sku_Value_List[0].Current = true;
         that.detail["goodsSkuVal"] =
           that.detail.Goods_Sku_Name_List[0].Sku_Value_List[0].Sku_Val;
         that.detail["skuValPrice"] =

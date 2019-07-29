@@ -1,5 +1,7 @@
 <!--地址管理-->
 <template>
+<view>
+  <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
   <view class="{{currentPage==0?'':'hidden'}}">
     <addressList :list.sync="addressList" @currentPage.user="getCurrentPage"></addressList>
   </view>
@@ -9,12 +11,14 @@
   <view class="{{currentPage==2?'':'hidden'}}">
     <addressEdit @currentPage.user="getCurrentPage" ></addressEdit>
   </view>
+</view>
 </template>
 <script>
 import wepy from 'wepy';
 import AddressList from "../components/address_list";
 import AddressAdd from "../components/address_add";
 import AddressEdit from "../components/address_edit";
+import BottomLoadMore from "../components/common/bottomLoadMore";
 import tip from '@/utils/tip';
 import {
   USER_SPECICAL_INFO
@@ -23,10 +27,11 @@ export default class Address extends wepy.page {
   config = {
     navigationBarTitleText: '地址管理',
   }
+
   data = {
     addressList: [],
     receiverInfo:{},
-
+    showLoading: false,
     //显示当前组件 0 列表 1新增 2编辑
     currentPage: 0,
     type: "" //哪个页面跳转过来的
@@ -34,9 +39,9 @@ export default class Address extends wepy.page {
 
   async getUserAddress() {
     let that = this;
+    this.showLoading = true;
     let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
     let openId = userSpecialInfo.openid;
-
     wx.cloud.callFunction({
       name: 'getUserAddress',
       data:{
@@ -44,19 +49,19 @@ export default class Address extends wepy.page {
       }
     })
     .then(res => {
-      console.log(res);
       if(res.result!== null){
         that.addressList = res.result.data;
         that.$invoke("addressList","refreshList", this.addressList);
       }
-      that.showLoading = false;
+      this.showLoading = false;
+      that.$apply();
     })
     .catch(err => {
       console.log(err);
-      that.showLoading = false;
       tip.error("获取地址错误");
+      this.showLoading = false;
+      that.$apply();
     })
-  
   }
 
   async receiverInf(id) {
@@ -71,18 +76,18 @@ export default class Address extends wepy.page {
     .then(res => {
       this.receiverInfo=res.result.data;
       this.$invoke("addressEdit","refresh", this.receiverInfo);
-      that.showLoading = false;
     })
     .catch(err => {
       tip.error("获取地址错误");
-      that.showLoading = false;
     })
   }
 
   components = {
     addressList: AddressList,
     addressAdd: AddressAdd,
-    addressEdit: AddressEdit
+    addressEdit: AddressEdit,
+    bottomLoadMore: BottomLoadMore,
+
   }
 
   onLoad(option) {

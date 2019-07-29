@@ -1,10 +1,5 @@
 <!--发现商品-->
 <template>
-  <view class="item">
-    <view class="img_box">
-      <image class="discover_img" src="{{cate.Category_Logo}}"></image>
-    </view>
-  </view>
   <view class="shop_list">
     <!--矩阵商品列表模块-->
     <shopGridList :purchasetype.sync="purchasetype" :list.sync="list"></shopGridList>
@@ -23,7 +18,7 @@ import tip from '@/utils/tip'
 
 export default class HomeDetail extends wepy.page {
   config = {
-    navigationBarTitleText: '',
+    navigationBarTitleText: '沏氛',
   }
   data = {
     catCode: "",
@@ -58,7 +53,7 @@ export default class HomeDetail extends wepy.page {
     }).then(res=>{
       console.log(res)
       that.cate = res.result.category;
-      wx.setNavigationBarTitle({title: that.cate.Category_Name});
+      //wx.setNavigationBarTitle({title: that.cate.Category_Name});
       that.list = [...that.list, ...res.result.data];
       that.page_total = res.result.page_total;
       if (that.page_total == 0) {
@@ -98,7 +93,7 @@ export default class HomeDetail extends wepy.page {
         console.log(res.target)
       }
       return {
-        title: this.cate.Category_Name,
+        title: "沏氛",
         path: '/pages/home_detail?code='+this.catCode,
         success: function(res) {
           // 转发成功
