@@ -3,20 +3,11 @@
     <view class="header">
       <view class="header_content">
         <image class="avatarUrl" src="{{avatarUrl}}"></image>
-        <view class="nickName">{{nickName}}</view>
+        <view wx:if="{{!isBusiness}}" class="nickName">{{nickName}}</view>
+        <view wx:else class="nickName">{{businessName}}</view>
       </view>
     </view>
     <view class="info_block">
-      <!-- <navigator class="item" url="/pages/register" wx:if="{{bShowBind}}">
-        <view>
-          <view class="item_content">
-            <image class="item_img" src="../images/icon_my_01.png"></image>
-            <view class="text" style="color:#fe2a2a">绑定手机号</view>
-          </view>
-          <view class="tip">绑定手机号可更好的让我们服务好您！</view>
-        </view>
-        <view class="arrow">&gt;</view>
-      </navigator> -->
       <navigator class="item" url="/pages/order">
         <view class="item_content">
           <van-icon name="bars" size="42rpx"/>
@@ -58,7 +49,7 @@
 <script>
 import wepy from 'wepy';
 import {
-  USER_INFO,USER_SPECICAL_INFO
+  USER_INFO,USER_SPECICAL_INFO,BUSINESS_INFO
 } from '@/utils/constant';
 export default class Index extends wepy.page {
   config = {
@@ -71,34 +62,19 @@ export default class Index extends wepy.page {
   data = {
     avatarUrl: "",
     nickName: "",
-    bShowBind:false
+    bShowBind:false,
+    isBusiness:false,
+    businessName:""
   }
-  // async getUserInfo(phone,code) {
-  //   let that = this;
-  //   let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {};
-  //   let openId = userSpecialInfo.openid;
-  //   const json = await api.getUserInfo({
-  //     query: {
-  //       openId: openId
-  //     }
-  //   });
-
-  //   if (json.data.code == 0) {
-  //     if (json.data.user.mobile.length>0) {
-  //       this.bShowBind=false;
-  //     } else {
-  //       this.bShowBind = true;
-  //     }
-  //     that.$apply();
-  //   } else {
-  //     tip.error(json.data.msg)
-  //   }
-  //   that.showLoading = false;
-  // }
 
   onLoad() {
     let that = this;
     let userInfo = wepy.getStorageSync(USER_INFO);
+    const busiInfo = wepy.getStorageSync(BUSINESS_INFO);
+    if(busiInfo.length!==0 && busiInfo[0].pass==1){
+      that.isBusiness = true;
+      that.businessName = busiInfo[0].businessName;
+    }
     that.avatarUrl = userInfo.avatarUrl;
     that.nickName = userInfo.nickName;
   }

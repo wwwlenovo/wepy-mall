@@ -71,7 +71,8 @@ export default class HomeDetail extends wepy.page {
       that.$apply();
     })
     .catch(err => {
-      tip.error(err);
+      console.log(err);
+      tip.error("获取商品失败");
     });
   }
 
@@ -101,7 +102,7 @@ export default class HomeDetail extends wepy.page {
       }
       return {
         title: "恒洁卫浴",
-        path: '/pages/home_detail?code='+this.catCode,
+        path: '/pages/goods_list',
         success: function(res) {
           // 转发成功
         },

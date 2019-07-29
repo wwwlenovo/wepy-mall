@@ -71,7 +71,8 @@ export default class HomeDetail extends wepy.page {
       that.$apply();
     })
     .catch(err => {
-      tip.error(err);
+      console.log(err);
+      tip.error("获取商品错误");
     });
   }
 
