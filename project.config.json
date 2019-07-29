@@ -11,7 +11,7 @@
 		"checkInvalidKey": true
 	},
 	"compileType": "miniprogram",
-	"appid": "wx1758aaedecbb1d0f",
+	"appid": "wx68334277ad8ce0e2",
 	"projectname": "wepy-Hengjie-mall",
 	"miniprogramRoot": "dist/",
 	"cloudfunctionRoot": "cloudfunctions/",
