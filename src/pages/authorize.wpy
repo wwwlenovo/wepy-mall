@@ -13,7 +13,8 @@ import wepy from 'wepy';
 import {
   SYSTEM_INFO,
   USER_SPECICAL_INFO,
-  USER_INFO
+  USER_INFO,
+  BUSINESS_INFO
 } from '@/utils/constant';
 export default class Authorize extends wepy.page {
   config = {
@@ -24,6 +25,14 @@ export default class Authorize extends wepy.page {
       name: 'getOpenID'
     }).then(res => {
       wepy.setStorageSync(USER_SPECICAL_INFO,{openid:res.result.openid,appid:res.result.appid});
+      return wx.cloud.callFunction({
+        name:"getBusinessInfo",
+        data:{
+          openId:res.result.openid
+        }
+      });
+    }).then(info =>{
+      wepy.setStorageSync(BUSINESS_INFO, info.result.data);
     });
     
     let res = await wepy.getSetting()

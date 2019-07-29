@@ -112,7 +112,7 @@
 </template>
 <script>
 import wepy from "wepy";
-import { SYSTEM_INFO, USER_SPECICAL_INFO } from "@/utils/constant";
+import { SYSTEM_INFO, USER_SPECICAL_INFO, BUSINESS_INFO } from "@/utils/constant";
 import tip from "@/utils/tip";
 import WxParse from "../plugins/wxParse/wxParse";
 export default class goodsDetail extends wepy.page {
@@ -174,11 +174,17 @@ export default class goodsDetail extends wepy.page {
   }
   async getGoodsDetail() {
     let that = this;
+    const busiInfo = wepy.getStorageSync(BUSINESS_INFO);
+    let isBusiness = false;
+    if(busiInfo.length!==0 && busiInfo[0].pass==1){
+      isBusiness = true;
+    }
     wx.cloud
       .callFunction({
         name: "getGoodsDetail",
         data: {
-          id: that.goodsId
+          id: that.goodsId,
+          isBusiness:isBusiness
         }
       })
       .then(res => {

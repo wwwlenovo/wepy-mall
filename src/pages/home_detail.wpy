@@ -11,6 +11,7 @@
 </template>
 <script>
 import wepy from 'wepy';
+import { SYSTEM_INFO, USER_SPECICAL_INFO, BUSINESS_INFO } from "@/utils/constant";
 import ShopGridList from '@/components/shop_grid_list'
 import BottomLoadMore from "../components/common/bottomLoadMore"
 import Placeholder from "../components/common/placeholder"
@@ -43,9 +44,15 @@ export default class HomeDetail extends wepy.page {
 
   async getGoodList(currentPage, size) {
     let that = this;
+    const busiInfo = wepy.getStorageSync(BUSINESS_INFO);
+    let isBusiness = false;
+    if(busiInfo.length!==0 && busiInfo[0].pass==1){
+      isBusiness = true;
+    }
     wx.cloud.callFunction({
       name: 'getGoodsList',
       data:{
+        isBusiness:isBusiness,
         page: currentPage || 1,
         size: size || 10,
         cateCode: this.catCode

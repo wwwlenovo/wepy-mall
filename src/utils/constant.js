@@ -22,3 +22,5 @@ export const CURRENT_GOODS_INFO = "currentGoodsInfo";
 export const ADDRESS_ID = "addressId";
 
 export const SEL_CLASS_CODE = "selClassCode";
+
+export const BUSINESS_INFO = "businessInfo";
