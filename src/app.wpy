@@ -7,6 +7,9 @@
 <script>
 import wepy from 'wepy';
 import 'wepy-async-function';
+import {
+  USER_SPECICAL_INFO
+} from '@/utils/constant';
 export default class extends wepy.app {
   config = {
     pages: [
