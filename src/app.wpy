@@ -24,6 +24,7 @@ export default class extends wepy.app {
       'pages/goods_detail',
       'pages/confirm_order',
       'pages/address',
+      'pages/goods_list',
       'pages/business_sign_up'
     ],
     usingComponents: {
@@ -34,12 +35,17 @@ export default class extends wepy.app {
       "van-icon": "components/vant/icon/index",
       "van-transition": "components/vant/transition/index",
       "van-popup": "components/vant/popup/index",
-      "van-loading": "components/vant/loading/index"
+      "van-loading": "components/vant/loading/index",
+      "van-cell": "components/vant/cell/index",
+      "van-cell-group": "components/vant/cell-group/index",
+      "van-field": "components/vant/field/index",
+      "van-row": "components/vant/row/index",
+      "van-col": "components/vant/col/index"
     },
     window: {
       backgroundTextStyle: 'dark',
       navigationBarBackgroundColor: 'white',
-      navigationBarTitleText: '沏氛',
+      navigationBarTitleText: '恒洁卫浴',
       navigationBarTextStyle: 'black',
       enablePullDownRefresh: true,
       backgroundColor: '#EFEFEF'
@@ -55,7 +61,12 @@ export default class extends wepy.app {
         "text": "首页",
         "iconPath": "images/icon_home.png",
         "selectedIconPath": "images/icon_home_active.png"
-      }, {
+      },{
+        "pagePath": "pages/goods_list",
+        "text": "商品",
+        "iconPath": "images/icon_classify.png",
+        "selectedIconPath": "images/icon_classify_active.png"
+      },{
         "pagePath": "pages/info",
         "text": "我的",
         "iconPath": "images/icon_info.png",
