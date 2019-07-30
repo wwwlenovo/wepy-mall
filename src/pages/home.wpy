@@ -149,6 +149,7 @@ export default class Home extends wepy.page {
 <style lang="less">
 .swiper {
   height: 1280rpx;
+  margin-bottom: 14rpx;
 }
 
 .slide-image {

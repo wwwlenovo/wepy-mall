@@ -75,7 +75,12 @@ export default class extends wepy.app {
     } else {
       wx.cloud.init({
         traceUser: true
-      })
+      });
+      wx.cloud.callFunction({
+        name: 'getOpenID'
+      }).then(res => {
+        wepy.setStorageSync(USER_SPECICAL_INFO,{openid:res.result.openid,appid:res.result.appid});
+      });
     }
   }
 }
