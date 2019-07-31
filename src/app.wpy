@@ -25,7 +25,8 @@ export default class extends wepy.app {
       'pages/confirm_order',
       'pages/address',
       'pages/goods_list',
-      'pages/business_sign_up'
+      'pages/business_sign_up',
+      'pages/free_page',
     ],
     usingComponents: {
       "van-button": "components/vant/button/index",

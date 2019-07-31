@@ -7,13 +7,46 @@
         </swiper-item>
       </block>
     </swiper>
+    <van-row>
+      <van-col>
+        <view class="coupon-header">选购立减</view>
+      </van-col>
+    </van-row>
+    <van-row gutter="4">
+      <van-col span="6">
+        <image class="coupon"></image>
+      </van-col>
+      <van-col span="6">
+        <image class="coupon"></image>
+      </van-col>
+      <van-col span="6">
+        <image class="coupon"></image>
+      </van-col>
+      <van-col span="6">
+        <image class="coupon"></image>
+      </van-col>
+    </van-row>
     <video wx:for="{{videos}}" wx:key="item" src="{{item.video}}" class="home-video" autoplay="{{true}}"></video>
-    <!--发现好商品模块-->
-    <discover :list.sync="discoverList"></discover>
-    <!--加载更多时动画-->
-    <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
-    <!--暂无数据显示-->
-    <placeholder :show.sync="is_empty" message="暂无发现数据"></placeholder>
+    <van-row >
+      <van-col span="8">
+        <navigator  open-type="navigate" url="/pages/free_page?page=about1" >
+          <image src="{{about[0].src}}" class="about"></image>
+        </navigator>
+      </van-col>
+      <van-col span="8">
+        <navigator open-type="navigate" url="/pages/free_page?page=about2" >
+          <image src="{{about[1].src}}" class="about"></image>
+        </navigator>
+      </van-col>
+      <van-col span="8">
+        <navigator open-type="navigate" url="/pages/free_page?page=about3" >
+          <image src="{{about[2].src}}" class="about"></image>
+        </navigator>
+      </van-col>
+    </van-row>
+    <van-row>
+      <image class="footer" src="{{footer.src}}"></image>
+    </van-row>
   </view>
 </template>
 <script>
@@ -54,7 +87,9 @@ export default class Home extends wepy.page {
     //广告列表
     adList: [],
     tps: 0,
-    is_show_alert: true
+    is_show_alert: true,
+    about:[],
+    footer:{}
   }
   async getDiscoverList(currentPage, size) {
     let that = this;
@@ -80,6 +115,15 @@ export default class Home extends wepy.page {
     const db = wx.cloud.database();
     db.collection('HomeVideo').get().then(res => {this.videos = res.data;this.$apply();});
   }
+
+  async getAboutPic(){
+    const db = wx.cloud.database();
+    db.collection('About').orderBy('seq', 'asc').get().then(res => {this.about = res.data;this.$apply();});
+  }
+  async getFooterPic(){
+    const db = wx.cloud.database();
+    db.collection('Footer').get().then(res => {this.footer = res.data[0];this.$apply();});
+  }
   async getAdList() {
     let that = this;
     wx.cloud.callFunction({
@@ -92,8 +136,9 @@ export default class Home extends wepy.page {
   onLoad() {
     let that = this;
     this.discoverList = [];
+    this.getAboutPic();
+    this.getFooterPic();
     this.getHomeVideo();
-    that.getDiscoverList();
     this.getAdList();
   }
   computed = {}
@@ -160,8 +205,32 @@ export default class Home extends wepy.page {
 }
 
 .home-video {
-  height: 600rpx;
+  height: 750rpx;
+  width: 750rpx;
+}
+
+.coupon {
+  width: 160rpx;
+  height: 160rpx;
+  margin: 10rpx;
+  border: red dotted 1rpx;
+}
+
+.about {
+  width: 240rpx;
+  height: 100rpx;
+  margin: 5rpx;
+}
+
+.coupon-header {
+  font-weight: 500;
+  font-size: 30rpx;
+  margin-left: 20rpx;
+}
+
+.footer {
   width: 100%;
+  height: 250rpx;
 }
 
 .slide-image {

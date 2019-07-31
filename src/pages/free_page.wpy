@@ -1,0 +1,44 @@
+<template>
+    <image class="pic" src="{{src.src}}"></image>
+</template>
+<script>
+import wepy from 'wepy';
+import {
+  SYSTEM_INFO,
+  USER_SPECICAL_INFO,
+  USER_INFO,
+  BUSINESS_INFO
+} from '@/utils/constant';
+export default class Authorize extends wepy.page {
+  config = {
+    navigationBarTitleText: '恒洁卫浴',
+  }
+  data ={
+      src:""
+
+  }
+  onLoad(option) { 
+      this.getPage(option.page);
+  }
+
+ async getPage(pageName){
+    const db = wx.cloud.database();
+    db.collection('FreePage').where({
+        name:pageName
+    }).get().then(res => {this.src = res.data[0];this.$apply();});
+  }
+
+  methods = {
+
+  }
+  events = {
+
+  }
+}
+</script>
+<style lang="less">
+.pic {
+    width: 100%;
+    height: 1280rpx;
+}
+</style>
