@@ -14,16 +14,16 @@
     </van-row>
     <van-row gutter="4">
       <van-col span="6">
-        <image class="coupon"></image>
+        <image src="{{coupons[0].src}}" class="coupon" @tap="getCoupon(0)"></image>
       </van-col>
       <van-col span="6">
-        <image class="coupon"></image>
+        <image src="{{coupons[1].src}}" class="coupon" @tap="getCoupon(1)"></image>
       </van-col>
       <van-col span="6">
-        <image class="coupon"></image>
+        <image src="{{coupons[2].src}}" class="coupon" @tap="getCoupon(2)"></image>
       </van-col>
       <van-col span="6">
-        <image class="coupon"></image>
+        <image src="{{coupons[3].src}}" class="coupon" @tap="getCoupon(3)"></image>
       </van-col>
     </van-row>
     <video wx:for="{{videos}}" wx:key="item" src="{{item.video}}" class="home-video" autoplay="{{true}}"></video>
@@ -89,7 +89,8 @@ export default class Home extends wepy.page {
     tps: 0,
     is_show_alert: true,
     about:[],
-    footer:{}
+    footer:{},
+    coupons:[]
   }
   async getDiscoverList(currentPage, size) {
     let that = this;
@@ -138,11 +139,48 @@ export default class Home extends wepy.page {
     this.discoverList = [];
     this.getAboutPic();
     this.getFooterPic();
+    this.getCouponPic();
     this.getHomeVideo();
     this.getAdList();
   }
+
+  async getCouponPic(){
+    const db = wx.cloud.database();
+    db.collection('Coupons').orderBy('seq', 'asc').get().then(res => {this.coupons = res.data;this.$apply();});
+  }
   computed = {}
   methods = {
+    async getCoupon(id){
+    let setting = await wepy.getSetting()
+    if (!(setting.authSetting)['scope.userInfo']) {
+      tip.error("请先登录授权");
+      setTimeout(() => {
+        wepy.redirectTo({
+          url: '/pages/authorize'
+        });
+      }, 2000);
+      return;
+    }
+      let downUrl = this.coupons[id].downUrl;
+      wepy.downloadFile({
+          url: downUrl,
+      })
+      .then(res=>{
+        if(res.statusCode === 200){
+          return wepy.saveImageToPhotosAlbum({
+             filePath	: res.tempFilePath
+          });
+        }
+      })
+      .then(res=>{
+        tip.success("保存成功");
+        console.log(res);
+      })
+      .catch(err => {
+        tip.error("保存失败");
+        console.log(err);
+      })
+    },
     goToAdvert(url) {
       console.log("url===" + url);
       if (url.length == 0) {
@@ -178,22 +216,6 @@ export default class Home extends wepy.page {
   events = {}
   //加载更多
   onReachBottom() {
-    let that = this;
-    that.showLoading = true;
-    console.log(that.page_total + "===" + that.currentPage);
-    //判断总页数是否大于翻页数
-    if ((that.page_total) > that.currentPage) {
-      //防止重复加载
-      if (that.preventRepeatReuqest) {
-        return true;
-      }
-      that.preventRepeatReuqest = true;
-      that.currentPage++;
-      that.getDiscoverList(that.currentPage);
-      that.preventRepeatReuqest = false;
-    } else {
-      that.showLoading = false;
-    }
   };
 }
 
@@ -213,7 +235,6 @@ export default class Home extends wepy.page {
   width: 160rpx;
   height: 160rpx;
   margin: 10rpx;
-  border: red dotted 1rpx;
 }
 
 .about {
