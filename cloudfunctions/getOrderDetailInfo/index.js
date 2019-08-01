@@ -7,7 +7,7 @@ const addressCollection = db.collection('Address')
 
 exports.main = async (event, context) => {
     let order;
-    if(!event.isCart){
+    if(!event.isCart && event.goodsId && event.skuVal){
         order = await cartCollection.where({
             openId: event.openId,
             goodsId: event.goodsId,
