@@ -5,8 +5,10 @@ const db = cloud.database()
 const cartCollection = db.collection('Cart')
 
 exports.main = async (event, context) => {
+  const wxContext = cloud.getWXContext();
+  const OPENID= wxContext.OPENID;
   let goods = await cartCollection.where({
-      openId:event.openId
+      openId:OPENID
   }).get();
   for(let i=0;i<goods.data.length;i++){
       let item = goods.data[i];

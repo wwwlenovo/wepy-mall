@@ -10,20 +10,22 @@ exports.main = async (event, context) => {
     const page = event.page;
     const size = event.size;
     let count,order;
+    const wxContext = cloud.getWXContext();
+    const OPENID= wxContext.OPENID;
     if (event.orderStatus == undefined) {
          count = await orderCollection.where({
-            openId: event.openId
+            openId: OPENID
         }).count();
          order = await orderCollection.where({
-            openId: event.openId
+            openId: OPENID
         }).skip((page - 1) * size).limit(size).get();
     } else {
          count = await orderCollection.where({
-            openId: event.openId,
+            openId: OPENID,
             status: event.orderStatus
         }).count();
          order = await orderCollection.where({
-            openId: event.openId,
+            openId: OPENID,
             status: event.orderStatus
         }).skip((page - 1) * size).limit(size).get();
     }

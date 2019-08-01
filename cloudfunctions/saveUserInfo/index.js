@@ -4,20 +4,22 @@ const db = cloud.database()
 const userInfoCollection = db.collection('UserInfo')
 
 exports.main = async (event, context) => {
+    const wxContext = cloud.getWXContext();
+    const OPENID= wxContext.OPENID;
     let res = await userInfoCollection.where({
-        openId:event.openId
+        openId:OPENID
     }).get();
     if(res.data.length==0){
         return await userInfoCollection.add({
             data:{
-                openId:event.openId,
+                openId:OPENID,
                 UserInfo:event.userInfo,
                 systemInfo:event.systemInfo
             }
         })
     }else {
         return await userInfoCollection.where({
-            openId:event.openId
+            openId:OPENID
         }).update({
             data:{
                 UserInfo:event.userInfo,

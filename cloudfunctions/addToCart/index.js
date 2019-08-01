@@ -6,15 +6,17 @@ const cartCollection = db.collection('Cart')
 
 // 云函数入口函数
 exports.main = async (event, context) => {
+  const wxContext = cloud.getWXContext();
+  const OPENID= wxContext.OPENID;
   const goods = await cartCollection.where({
-      openId:event.openId,
+      openId:OPENID,
       goodsId:event.goodsId,
       skuVal:event.skuVal
   }).get();
   if(goods.data.length === 0){
      return await cartCollection.add({
        data:{
-        openId:event.openId,
+        openId:OPENID,
         goodsId:event.goodsId,
         skuVal:event.skuVal,
         orderNum: event.orderNum,
@@ -26,7 +28,7 @@ exports.main = async (event, context) => {
       });
   }else {
       return await cartCollection.where({
-        openId:event.openId,
+        openId:OPENID,
         goodsId:event.goodsId,
         skuVal:event.skuVal
     }).update({

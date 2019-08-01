@@ -15,10 +15,12 @@ const ip = require('ip');
  *
  * @param {obj} event
  * @param {string} event.type 功能类型
- * @param {} event.openid 用户的openid
+ * @param {} OPENID 用户的openid
  */
 exports.main = async function (event) {
-  const { type, data, openid } = event;
+  const wxContext = cloud.getWXContext();
+  const OPENID= wxContext.OPENID;
+  const { type, data } = event;
   cloud.init();
   const db = cloud.database();
 
@@ -30,7 +32,7 @@ exports.main = async function (event) {
     case 'unifiedorder': {
       const order = await orderCollection.where({
         _id:event.orderId,
-        openId:openid
+        openId:OPENID
       }).get();
       if(order.data.length==0){
         return new Res({
@@ -59,7 +61,7 @@ exports.main = async function (event) {
           notify_url,
           out_trade_no,
           total_fee,
-          openid,
+          openid:OPENID,
           trade_type: 'JSAPI',
           timeStamp: time_stamp
       };
@@ -149,7 +151,7 @@ exports.main = async function (event) {
             name: 'wxmessage',
             data: {
               formId: prepay_id,
-              openId: openid,
+              openId: OPENID,
               appId: mpAppId,
               page: `/pages/order`,
               data: {

@@ -4,10 +4,12 @@ const db = cloud.database()
 const addressCollection = db.collection('Address')
 
 exports.main = async (event, context) => {
+    const wxContext = cloud.getWXContext();
+    const OPENID= wxContext.OPENID;
     if(event.id!== ""){
         return await addressCollection.where({
             _id:event.id,
-            openId:event.openId
+            openId:OPENID
         }).update({
             data:{            
                 address: event.address,
@@ -20,7 +22,7 @@ exports.main = async (event, context) => {
     } else {
         return await addressCollection.add({
             data:{
-                openId:event.openId,
+                openId:OPENID,
                 address: event.address,
                 isDefault: event.isDefault,
                 province:event.province,

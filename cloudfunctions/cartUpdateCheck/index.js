@@ -5,9 +5,11 @@ const db = cloud.database()
 const cartCollection = db.collection('Cart')
 
 exports.main = async (event, context) => {
+    const wxContext = cloud.getWXContext();
+    const OPENID= wxContext.OPENID;
     if(event.all){
         return await cartCollection.where({
-            openId:event.openId
+            openId:OPENID
         }).update({
             data:{
                 isChecked: event.isChecked
@@ -15,7 +17,7 @@ exports.main = async (event, context) => {
         });
     }else {
         return await cartCollection.where({
-            openId:event.openId,
+            openId:OPENID,
             _id:event.id
         }).update({
             data:{

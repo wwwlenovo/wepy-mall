@@ -5,8 +5,10 @@ const db = cloud.database()
 const cartCollection = db.collection('Cart')
 
 exports.main = async (event, context) => {
+    const wxContext = cloud.getWXContext();
+    const OPENID= wxContext.OPENID;
     let update = await cartCollection.where({
-        openId:event.openId,
+        openId:OPENID,
         goodsId:event.goodsId,
         skuVal:event.skuVal
     }).update({
@@ -16,7 +18,7 @@ exports.main = async (event, context) => {
     });
 
     let order = await cartCollection.where({
-        openId: event.openId,
+        openId: OPENID,
         goodsId: event.goodsId,
         skuVal: event.skuVal
     }).get();

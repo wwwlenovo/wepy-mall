@@ -6,10 +6,12 @@ const cartCollection = db.collection('Cart')
 const addressCollection = db.collection('Address')
 
 exports.main = async (event, context) => {
+    const wxContext = cloud.getWXContext();
+    const OPENID= wxContext.OPENID;
     let order;
-    if(!event.isCart){
+    if(!event.isCart && event.goodsId && event.skuVal){
         order = await cartCollection.where({
-            openId: event.openId,
+            openId: OPENID,
             goodsId: event.goodsId,
             skuVal:event.skuVal
         }).get();
@@ -19,7 +21,7 @@ exports.main = async (event, context) => {
         }
     }else {
         order = await cartCollection.where({
-            openId: event.openId,
+            openId: OPENID,
             isChecked:true
         }).get();
         order.data.forEach((value,index)=>{
@@ -28,7 +30,7 @@ exports.main = async (event, context) => {
     }
 
     let address = await addressCollection.where({
-        openId: event.openId,
+        openId: OPENID,
         isDefault: 1
     }).get();
     if(address.data.length!==0){

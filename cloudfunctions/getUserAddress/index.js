@@ -4,5 +4,8 @@ const db = cloud.database()
 const addressCollection = db.collection('Address')
 
 exports.main = async (event, context) => {
-    return await addressCollection.where({openId:event.openId}).get();
+    const wxContext = cloud.getWXContext();
+    const OPENID= wxContext.OPENID;
+    
+    return await addressCollection.where({openId:OPENID}).get();
 }
